@@ -1,7 +1,7 @@
 # Requirements: Event Deduplication Service
 
 **Defined:** 2026-02-27
-**Core Value:** Accurate event deduplication — the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
+**Core Value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
 
 ## v1 Requirements
 
@@ -44,7 +44,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Data Pipeline
 
 - [ ] **PIPE-01**: Docker container watches a configured directory for new JSON files
-- [ ] **PIPE-02**: Processing is idempotent — re-processing the same file does not create duplicate records
+- [ ] **PIPE-02**: Processing is idempotent -- re-processing the same file does not create duplicate records
 - [ ] **PIPE-03**: Each file is processed in a single database transaction (all-or-nothing)
 - [ ] **PIPE-04**: Service connects directly to PostgreSQL to read existing events and write canonical events + source links
 - [ ] **PIPE-05**: Structured processing logs report events processed, matches found, new canonicals created, and errors per file
@@ -58,8 +58,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Frontend: Manual Review
 
-- [ ] **REV-01**: Manual split — detach a source event from a canonical event (create new canonical or assign to another)
-- [ ] **REV-02**: Manual merge — combine two canonical events into one, re-synthesize canonical fields
+- [ ] **REV-01**: Manual split -- detach a source event from a canonical event (create new canonical or assign to another)
+- [ ] **REV-02**: Manual merge -- combine two canonical events into one, re-synthesize canonical fields
 - [ ] **REV-03**: Review queue of low-confidence matches sorted by uncertainty (most ambiguous first)
 - [ ] **REV-04**: All manual override decisions are logged with an audit trail
 - [ ] **REV-05**: Batch processing dashboard showing match rates, error rates, and processing trends over time
@@ -76,7 +76,7 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ### Accuracy & Optimization
 
-- **ACC-01**: Feedback loop — manual review decisions automatically inform threshold tuning recommendations
+- **ACC-01**: Feedback loop -- manual review decisions automatically inform threshold tuning recommendations
 - **ACC-02**: Duplicate cluster visualization (network graph showing source overlap patterns)
 - **ACC-03**: Incremental blocking key indexing for datasets >10K events/week
 
@@ -100,13 +100,51 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated by roadmap) | | |
+| EVAL-01 | Phase 1: Foundation & Ground Truth | Pending |
+| EVAL-02 | Phase 1: Foundation & Ground Truth | Pending |
+| EVAL-03 | Phase 1: Foundation & Ground Truth | Pending |
+| MTCH-01 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-02 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-03 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-04 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-05 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-06 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-07 | Phase 7: Accuracy Refinement | Pending |
+| MTCH-08 | Phase 7: Accuracy Refinement | Pending |
+| MTCH-09 | Phase 7: Accuracy Refinement | Pending |
+| MTCH-10 | Phase 2: Core Matching Pipeline | Pending |
+| AI-01 | Phase 5: AI-Assisted Matching | Pending |
+| AI-02 | Phase 5: AI-Assisted Matching | Pending |
+| AI-03 | Phase 5: AI-Assisted Matching | Pending |
+| AI-04 | Phase 5: AI-Assisted Matching | Pending |
+| AI-05 | Phase 5: AI-Assisted Matching | Pending |
+| CANL-01 | Phase 2: Core Matching Pipeline | Pending |
+| CANL-02 | Phase 2: Core Matching Pipeline | Pending |
+| CANL-03 | Phase 2: Core Matching Pipeline | Pending |
+| CANL-04 | Phase 2: Core Matching Pipeline | Pending |
+| PIPE-01 | Phase 3: Pipeline Integration & Deployment | Pending |
+| PIPE-02 | Phase 1: Foundation & Ground Truth | Pending |
+| PIPE-03 | Phase 1: Foundation & Ground Truth | Pending |
+| PIPE-04 | Phase 1: Foundation & Ground Truth | Pending |
+| PIPE-05 | Phase 3: Pipeline Integration & Deployment | Pending |
+| UI-01 | Phase 4: API & Browse Frontend | Pending |
+| UI-02 | Phase 4: API & Browse Frontend | Pending |
+| UI-03 | Phase 4: API & Browse Frontend | Pending |
+| UI-04 | Phase 4: API & Browse Frontend | Pending |
+| REV-01 | Phase 6: Manual Review & Operations | Pending |
+| REV-02 | Phase 6: Manual Review & Operations | Pending |
+| REV-03 | Phase 6: Manual Review & Operations | Pending |
+| REV-04 | Phase 6: Manual Review & Operations | Pending |
+| REV-05 | Phase 6: Manual Review & Operations | Pending |
+| DEPL-01 | Phase 3: Pipeline Integration & Deployment | Pending |
+| DEPL-02 | Phase 3: Pipeline Integration & Deployment | Pending |
+| DEPL-03 | Phase 3: Pipeline Integration & Deployment | Pending |
 
 **Coverage:**
-- v1 requirements: 33 total
-- Mapped to phases: 0
-- Unmapped: 33
+- v1 requirements: 39 total
+- Mapped to phases: 39
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after initial definition*
+*Last updated: 2026-02-27 after roadmap creation*
