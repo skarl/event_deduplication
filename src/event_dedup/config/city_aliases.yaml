@@ -1,0 +1,34 @@
+# City alias mappings: district/neighborhood -> parent municipality
+# Used during normalization to ensure consistent city-based blocking
+# Keys and values should be written in original German (normalization applied at load time)
+
+# Kenzingen districts
+Nordweil: Kenzingen
+Hecklingen: Kenzingen
+Bombach: Kenzingen
+
+# Emmendingen districts
+Mundingen: Emmendingen
+Kollmarsreute: Emmendingen
+Wasser: Emmendingen
+Windenreute: Emmendingen
+Maleck: Emmendingen
+
+# Waldkirch districts
+Kollnau: Waldkirch
+Buchholz: Waldkirch
+Suggental: Waldkirch
+
+# Freiburg im Breisgau districts
+Waltershofen: Freiburg im Breisgau
+Opfingen: Freiburg im Breisgau
+Tiengen: Freiburg im Breisgau
+Munzingen: Freiburg im Breisgau
+Lehen: Freiburg im Breisgau
+
+# Gutach im Breisgau
+Bleibach: Gutach im Breisgau
+
+# Rheinhausen
+Oberhausen: Rheinhausen
+Niederhausen: Rheinhausen

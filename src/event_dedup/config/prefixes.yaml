@@ -1,0 +1,30 @@
+# Configurable prefix patterns for title normalization
+# Stripped during normalization for matching; originals preserved for display
+# Use ORIGINAL German forms (with real umlauts) -- matching is case-insensitive
+
+# Source-specific article prefixes (dash-separated)
+dash_prefixes:
+  - "Nordwiler Narrenfahrplan"
+  - "Wahlkampfstand Bündnis 90/Die Grünen"
+  - "Kommunales Kino"
+  - "Kolping Kids"
+  - "Fasnet im Ladhof"
+  - "Narrenzunft Bergteufel"
+
+# Content-type prefixes (colon-separated)
+colon_prefixes:
+  - "Vortrag"
+  - "Bildervortrag"
+  - "Kochworkshop"
+  - "FreiTagZeit"
+  - "Jungentreff"
+  - "Textil-Tag"
+  - "SPD-Veranstaltung"
+  - "Theaterabend"
+  - "Kinderprogramm"
+  - "SkF Waldkirch"
+  - "Waldkircher Klimagespräch"
+
+# Generic event-type prefixes (dash-separated, strip only the prefix part)
+generic_prefixes:
+  - "Tag der offenen Tür"
