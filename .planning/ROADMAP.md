@@ -50,12 +50,13 @@ Plans:
   3. Canonical events contain the best field from each source (longest description, most precise location, richest highlights) with provenance tracking showing which source contributed each field
   4. When new source events match an existing canonical event, the canonical is enriched with better information without losing existing good data
   5. Similarity thresholds (high-confidence, ambiguous zone, auto-reject) can be changed via configuration without code changes
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
+- [ ] 02-01-PLAN.md -- Database models (CanonicalEvent, CanonicalEventSource, MatchDecision), matching config (YAML + Pydantic), signal scorers (date, geo, title, description), weighted combiner
+- [ ] 02-02-PLAN.md -- Candidate pair generator using blocking keys, matching pipeline orchestrator that scores all pairs
+- [ ] 02-03-PLAN.md -- Graph-based clustering with networkx connected_components, cluster coherence validation
+- [ ] 02-04-PLAN.md -- Canonical event synthesis with field strategies and provenance, enrichment engine, full pipeline orchestrator, updated evaluation harness
 
 ### Phase 3: Pipeline Integration & Deployment
 **Goal**: The complete pipeline runs as Docker containers that automatically process new JSON files dropped into a watched directory
@@ -140,7 +141,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Ground Truth | 4/4 | Complete | 2026-02-27 |
-| 2. Core Matching Pipeline | 0/3 | Not started | - |
+| 2. Core Matching Pipeline | 0/4 | Not started | - |
 | 3. Pipeline Integration & Deployment | 0/2 | Not started | - |
 | 4. API & Browse Frontend | 0/2 | Not started | - |
 | 5. AI-Assisted Matching | 0/2 | Not started | - |
