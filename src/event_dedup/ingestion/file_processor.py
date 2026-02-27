@@ -18,6 +18,9 @@ from event_dedup.ingestion.json_loader import (
 from event_dedup.models.event_date import EventDate
 from event_dedup.models.file_ingestion import FileIngestion
 from event_dedup.models.source_event import SourceEvent
+from event_dedup.preprocessing.blocking import generate_blocking_keys
+from event_dedup.preprocessing.normalizer import load_city_aliases, normalize_city, normalize_text
+from event_dedup.preprocessing.prefix_stripper import PrefixConfig, load_prefix_config, strip_prefixes
 
 logger = logging.getLogger(__name__)
 
@@ -145,9 +148,23 @@ def _build_event_dates(event: EventData, event_id: str) -> list[EventDate]:
 class FileProcessor:
     """Process JSON event files with idempotency and transaction safety."""
 
-    def __init__(self, session_factory: async_sessionmaker[AsyncSession], dead_letter_dir: Path) -> None:
+    def __init__(
+        self,
+        session_factory: async_sessionmaker[AsyncSession],
+        dead_letter_dir: Path,
+        prefix_config_path: Path | None = None,
+        city_aliases_path: Path | None = None,
+    ) -> None:
         self.session_factory = session_factory
         self.dead_letter_dir = dead_letter_dir
+
+        # Load preprocessing configs at init time (not per-file)
+        config_dir = Path(__file__).resolve().parents[1] / "config"
+        prefix_path = prefix_config_path or config_dir / "prefixes.yaml"
+        aliases_path = city_aliases_path or config_dir / "city_aliases.yaml"
+
+        self.prefix_config: PrefixConfig = load_prefix_config(prefix_path)
+        self.city_aliases: dict[str, str] = load_city_aliases(aliases_path)
 
     async def process_file(self, file_path: Path) -> FileProcessResult:
         """Process a single JSON event file.
@@ -196,6 +213,32 @@ class FileProcessor:
                 all_models: list[SourceEvent | EventDate] = []
                 for event in file_data.events:
                     source_event = _build_source_event(event, source_code, file_ingestion.id)
+
+                    # Populate normalized fields
+                    stripped_title = strip_prefixes(event.title, self.prefix_config)
+                    source_event.title_normalized = normalize_text(stripped_title)
+                    source_event.short_description_normalized = (
+                        normalize_text(event.short_description) if event.short_description else None
+                    )
+                    source_event.location_name_normalized = (
+                        normalize_text(source_event.location_name) if source_event.location_name else None
+                    )
+                    source_event.location_city_normalized = (
+                        normalize_city(source_event.location_city, self.city_aliases)
+                        if source_event.location_city
+                        else None
+                    )
+
+                    # Generate blocking keys from event dates and location
+                    dates_as_date = [parse_date(d.date) for d in event.event_dates]
+                    source_event.blocking_keys = generate_blocking_keys(
+                        dates=dates_as_date,
+                        city_normalized=source_event.location_city_normalized,
+                        lat=source_event.geo_latitude,
+                        lon=source_event.geo_longitude,
+                        geo_confidence=source_event.geo_confidence,
+                    )
+
                     all_models.append(source_event)
                     all_models.extend(_build_event_dates(event, event.id))
 
