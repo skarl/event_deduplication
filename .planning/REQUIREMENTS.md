@@ -10,8 +10,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Ground Truth & Evaluation
 
 - [ ] **EVAL-01**: System includes a labeled ground truth dataset of 200-300 event pairs (same/different) from the 765-event sample data
-- [ ] **EVAL-02**: Evaluation harness reports precision, recall, and F1 score for deduplication decisions
-- [ ] **EVAL-03**: Evaluation can be run against any threshold configuration to measure impact of changes
+- [x] **EVAL-02**: Evaluation harness reports precision, recall, and F1 score for deduplication decisions
+- [x] **EVAL-03**: Evaluation can be run against any threshold configuration to measure impact of changes
 
 ### Matching Core
 
@@ -101,8 +101,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | EVAL-01 | Phase 1: Foundation & Ground Truth | Pending |
-| EVAL-02 | Phase 1: Foundation & Ground Truth | Pending |
-| EVAL-03 | Phase 1: Foundation & Ground Truth | Pending |
+| EVAL-02 | Phase 1: Foundation & Ground Truth | Complete |
+| EVAL-03 | Phase 1: Foundation & Ground Truth | Complete |
 | MTCH-01 | Phase 2: Core Matching Pipeline | Pending |
 | MTCH-02 | Phase 2: Core Matching Pipeline | Pending |
 | MTCH-03 | Phase 2: Core Matching Pipeline | Pending |
@@ -147,4 +147,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after Plan 01-02 completion*
+*Last updated: 2026-02-27 after Plan 01-03 completion (Phase 1 complete)*

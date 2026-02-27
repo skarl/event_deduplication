@@ -12,7 +12,7 @@ This roadmap takes the event deduplication service from zero to a fully operatio
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation & Ground Truth** - Database schema, data models, JSON ingestion, preprocessing, and labeled evaluation dataset
+- [x] **Phase 1: Foundation & Ground Truth** - Database schema, data models, JSON ingestion, preprocessing, and labeled evaluation dataset
 - [ ] **Phase 2: Core Matching Pipeline** - Multi-signal blocking, Tier 1 scoring, graph clustering, and canonical event synthesis
 - [ ] **Phase 3: Pipeline Integration & Deployment** - File watcher, end-to-end pipeline orchestration, Docker containers, and docker-compose
 - [ ] **Phase 4: API & Browse Frontend** - FastAPI REST API and React frontend for searching and viewing canonical events
@@ -37,7 +37,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md -- Project setup, database schema, SQLAlchemy models, Alembic migrations, JSON ingestion with idempotency
 - [x] 01-02-PLAN.md -- Text normalization (umlauts, prefixes, city aliases), blocking key generation, preprocessing integration
-- [ ] 01-03-PLAN.md -- Ground truth candidate generator, CLI labeling tool, evaluation harness (precision/recall/F1)
+- [x] 01-03-PLAN.md -- Ground truth candidate generator, CLI labeling tool, evaluation harness (precision/recall/F1)
 
 ### Phase 2: Core Matching Pipeline
 **Goal**: The system accurately deduplicates events using multi-signal scoring and graph-based clustering, producing canonical events that combine the best information from all sources
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Ground Truth | 2/3 | In progress | - |
+| 1. Foundation & Ground Truth | 3/3 | Complete | 2026-02-27 |
 | 2. Core Matching Pipeline | 0/3 | Not started | - |
 | 3. Pipeline Integration & Deployment | 0/2 | Not started | - |
 | 4. API & Browse Frontend | 0/2 | Not started | - |
