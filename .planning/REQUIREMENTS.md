@@ -44,9 +44,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Data Pipeline
 
 - [ ] **PIPE-01**: Docker container watches a configured directory for new JSON files
-- [ ] **PIPE-02**: Processing is idempotent -- re-processing the same file does not create duplicate records
-- [ ] **PIPE-03**: Each file is processed in a single database transaction (all-or-nothing)
-- [ ] **PIPE-04**: Service connects directly to PostgreSQL to read existing events and write canonical events + source links
+- [x] **PIPE-02**: Processing is idempotent -- re-processing the same file does not create duplicate records
+- [x] **PIPE-03**: Each file is processed in a single database transaction (all-or-nothing)
+- [x] **PIPE-04**: Service connects directly to PostgreSQL to read existing events and write canonical events + source links
 - [ ] **PIPE-05**: Structured processing logs report events processed, matches found, new canonicals created, and errors per file
 
 ### Frontend: Browse & Search
@@ -123,9 +123,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CANL-03 | Phase 2: Core Matching Pipeline | Pending |
 | CANL-04 | Phase 2: Core Matching Pipeline | Pending |
 | PIPE-01 | Phase 3: Pipeline Integration & Deployment | Pending |
-| PIPE-02 | Phase 1: Foundation & Ground Truth | Pending |
-| PIPE-03 | Phase 1: Foundation & Ground Truth | Pending |
-| PIPE-04 | Phase 1: Foundation & Ground Truth | Pending |
+| PIPE-02 | Phase 1: Foundation & Ground Truth | Complete |
+| PIPE-03 | Phase 1: Foundation & Ground Truth | Complete |
+| PIPE-04 | Phase 1: Foundation & Ground Truth | Complete |
 | PIPE-05 | Phase 3: Pipeline Integration & Deployment | Pending |
 | UI-01 | Phase 4: API & Browse Frontend | Pending |
 | UI-02 | Phase 4: API & Browse Frontend | Pending |
@@ -147,4 +147,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after roadmap creation*
+*Last updated: 2026-02-27 after Plan 01-01 completion*

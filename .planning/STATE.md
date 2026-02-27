@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 Phase: 1 of 7 (Foundation & Ground Truth)
-Plan: 0 of 3 in current phase
-Status: Ready to plan
-Last activity: 2026-02-27 -- Roadmap created
+Plan: 1 of 3 in current phase
+Status: Executing -- Plan 01-01 complete, Plan 01-02 next (Wave 2)
+Last activity: 2026-02-27 -- Completed Plan 01-01 (scaffolding, models, ingestion)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 5%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 5m
+- Total execution time: 0.08 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1 | 1/3 | 5m | 5m |
 
 **Recent Trend:**
-- Last 5 plans: -
-- Trend: -
+- Last 5 plans: 01-01 (5m)
+- Trend: starting
 
 *Updated after each plan completion*
 
@@ -42,6 +42,11 @@ Progress: [░░░░░░░░░░] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- [01-01]: Use JSON type instead of JSONB/ARRAY for SQLite test compatibility
+- [01-01]: Use sa.text("CURRENT_TIMESTAMP") for server defaults (PG + SQLite compatible)
+- [01-01]: Use hatchling build backend with src layout
+- [01-01]: Added sqlalchemy[asyncio] extra for greenlet dependency
+- [01-01]: Alembic env.py supports ALEMBIC_DATABASE_URL env override
 - [Roadmap]: Use Gemini Flash (not GPT-4o-mini) for AI-assisted matching in Phase 5
 - [Roadmap]: Ground truth dataset creation merged with foundation phase (both are prerequisites with no dependencies)
 - [Roadmap]: Docker deployment merged with pipeline integration (both deliver "the system runs as a service")
@@ -57,5 +62,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Roadmap created, ready to plan Phase 1
-Resume file: None
+Stopped at: Completed 01-01-PLAN.md
+Resume file: .planning/phases/01/01-01-SUMMARY.md
+Next action: /gsd:execute-phase 1 (Plan 01-02 next)
