@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md -- Project setup, database schema, SQLAlchemy models, Alembic migrations, JSON ingestion with idempotency
-- [ ] 01-02-PLAN.md -- Text normalization (umlauts, prefixes, city aliases), blocking key generation, preprocessing integration
+- [x] 01-02-PLAN.md -- Text normalization (umlauts, prefixes, city aliases), blocking key generation, preprocessing integration
 - [ ] 01-03-PLAN.md -- Ground truth candidate generator, CLI labeling tool, evaluation harness (precision/recall/F1)
 
 ### Phase 2: Core Matching Pipeline
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Ground Truth | 1/3 | In progress | - |
+| 1. Foundation & Ground Truth | 2/3 | In progress | - |
 | 2. Core Matching Pipeline | 0/3 | Not started | - |
 | 3. Pipeline Integration & Deployment | 0/2 | Not started | - |
 | 4. API & Browse Frontend | 0/2 | Not started | - |
