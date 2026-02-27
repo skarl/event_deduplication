@@ -32,12 +32,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A labeled ground truth dataset of 200-300 event pairs (same/different) exists from the 765-event sample data
   4. Running the evaluation harness against any matching configuration produces precision, recall, and F1 scores
   5. Text preprocessing normalizes umlauts, lowercases, strips prefixes, and generates blocking keys (date+city, date+geo grid) for every ingested event
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
 - [x] 01-01-PLAN.md -- Project setup, database schema, SQLAlchemy models, Alembic migrations, JSON ingestion with idempotency
 - [x] 01-02-PLAN.md -- Text normalization (umlauts, prefixes, city aliases), blocking key generation, preprocessing integration
 - [x] 01-03-PLAN.md -- Ground truth candidate generator, CLI labeling tool, evaluation harness (precision/recall/F1)
+- [x] 01-04-PLAN.md -- Auto-generated ground truth dataset (1181 labeled pairs via conservative multi-signal heuristics)
 
 ### Phase 2: Core Matching Pipeline
 **Goal**: The system accurately deduplicates events using multi-signal scoring and graph-based clustering, producing canonical events that combine the best information from all sources
@@ -138,7 +139,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Ground Truth | 3/3 | Complete | 2026-02-27 |
+| 1. Foundation & Ground Truth | 4/4 | Complete | 2026-02-27 |
 | 2. Core Matching Pipeline | 0/3 | Not started | - |
 | 3. Pipeline Integration & Deployment | 0/2 | Not started | - |
 | 4. API & Browse Frontend | 0/2 | Not started | - |
