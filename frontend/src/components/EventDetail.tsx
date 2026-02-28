@@ -92,6 +92,11 @@ export function EventDetail() {
               Needs Review
             </span>
           )}
+          {detail.ai_assisted && (
+            <span className="inline-block bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded font-medium">
+              AI Assisted
+            </span>
+          )}
         </div>
         {/* Review actions */}
         <div className="mt-3 pt-3 border-t flex gap-2">

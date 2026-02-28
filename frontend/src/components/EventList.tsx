@@ -110,6 +110,11 @@ export function EventList() {
                       >
                         {event.title}
                       </Link>
+                      {event.ai_assisted && (
+                        <span className="ml-1.5 inline-block bg-purple-100 text-purple-800 text-xs px-1.5 py-0.5 rounded font-medium align-middle">
+                          AI
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
                       {event.location_city ?? '-'}

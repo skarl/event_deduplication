@@ -14,6 +14,7 @@ export interface CanonicalEventSummary {
   source_count: number;
   match_confidence: number | null;
   needs_review: boolean;
+  ai_assisted: boolean;
 }
 
 export interface SourceEventDetail {
@@ -76,6 +77,7 @@ export interface CanonicalEventDetail {
   source_count: number;
   match_confidence: number | null;
   needs_review: boolean;
+  ai_assisted: boolean;
   sources: SourceEventDetail[];
   match_decisions: MatchDecision[];
 }
