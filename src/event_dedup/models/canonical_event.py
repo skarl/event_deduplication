@@ -61,6 +61,7 @@ class CanonicalEvent(Base):
     source_count: Mapped[int] = mapped_column(sa.Integer, default=1)
     match_confidence: Mapped[float | None] = mapped_column(sa.Float, nullable=True)
     needs_review: Mapped[bool] = mapped_column(sa.Boolean, default=False)
+    ai_assisted: Mapped[bool] = mapped_column(sa.Boolean, default=False)
     version: Mapped[int] = mapped_column(sa.Integer, default=1)
 
     # Timestamps

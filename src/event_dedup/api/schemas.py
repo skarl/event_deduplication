@@ -94,6 +94,7 @@ class CanonicalEventSummary(BaseModel):
     source_count: int
     match_confidence: float | None = None
     needs_review: bool
+    ai_assisted: bool = False
 
 
 class CanonicalEventDetail(BaseModel):
@@ -121,6 +122,7 @@ class CanonicalEventDetail(BaseModel):
     source_count: int
     match_confidence: float | None = None
     needs_review: bool
+    ai_assisted: bool = False
     first_date: OptDateStr = None
     last_date: OptDateStr = None
     sources: list[SourceEventDetail] = []

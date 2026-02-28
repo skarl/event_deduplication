@@ -242,6 +242,9 @@ def run_full_pipeline(
         canonical["match_confidence"] = _avg_cluster_confidence(
             cluster, match_result.decisions
         )
+        canonical["ai_assisted"] = _cluster_has_ai_decisions(
+            cluster, match_result.decisions
+        )
         canonical_events.append(canonical)
 
     for cluster in cluster_result.flagged_clusters:
@@ -249,6 +252,9 @@ def run_full_pipeline(
         canonical = synthesize_canonical(sources, config.canonical)
         canonical["needs_review"] = True
         canonical["match_confidence"] = _avg_cluster_confidence(
+            cluster, match_result.decisions
+        )
+        canonical["ai_assisted"] = _cluster_has_ai_decisions(
             cluster, match_result.decisions
         )
         canonical_events.append(canonical)
@@ -295,6 +301,19 @@ def _avg_cluster_confidence(
     )
 
 
+def _cluster_has_ai_decisions(
+    cluster: set[str],
+    decisions: list[MatchDecisionRecord],
+) -> bool:
+    """Check if any match decision in a cluster was resolved by AI."""
+    return any(
+        d.tier.startswith("ai")
+        and d.event_id_a in cluster
+        and d.event_id_b in cluster
+        for d in decisions
+    )
+
+
 def rebuild_pipeline_result(
     match_result: MatchResult,
     events: list[dict],
@@ -334,6 +353,9 @@ def rebuild_pipeline_result(
         canonical["match_confidence"] = _avg_cluster_confidence(
             cluster, match_result.decisions
         )
+        canonical["ai_assisted"] = _cluster_has_ai_decisions(
+            cluster, match_result.decisions
+        )
         canonical_events.append(canonical)
 
     for cluster in cluster_result.flagged_clusters:
@@ -341,6 +363,9 @@ def rebuild_pipeline_result(
         canonical = synthesize_canonical(sources, config.canonical)
         canonical["needs_review"] = True
         canonical["match_confidence"] = _avg_cluster_confidence(
+            cluster, match_result.decisions
+        )
+        canonical["ai_assisted"] = _cluster_has_ai_decisions(
             cluster, match_result.decisions
         )
         canonical_events.append(canonical)

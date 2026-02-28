@@ -126,6 +126,7 @@ async def replace_canonical_events(
             source_count=canonical_dict.get("source_count", 1),
             match_confidence=canonical_dict.get("match_confidence"),
             needs_review=canonical_dict.get("needs_review", False),
+            ai_assisted=canonical_dict.get("ai_assisted", False),
         )
         session.add(canonical)
         await session.flush()  # Get auto-generated ID
