@@ -311,3 +311,95 @@ class TestQueryAndExport:
         titles = {e["title"] for e in events}
         assert "Both Recent" in titles
         assert "Created Only" not in titles
+
+
+# ---------------------------------------------------------------------------
+# API integration tests
+# ---------------------------------------------------------------------------
+
+
+class TestExportAPI:
+    """Integration tests for POST /api/export endpoint."""
+
+    async def test_export_no_filters(self, api_client, seeded_db):
+        """POST /api/export with empty body returns 200 JSON with events."""
+        resp = await api_client.post("/api/export", json={})
+
+        assert resp.status_code == 200
+        assert resp.headers["content-type"].startswith("application/json")
+        assert "content-disposition" in resp.headers
+        assert ".json" in resp.headers["content-disposition"]
+
+        body = resp.json()
+        assert "events" in body
+        assert len(body["events"]) == 2
+        assert "metadata" in body
+
+    async def test_export_with_created_after(self, api_client, seeded_db):
+        """POST /api/export with created_after filter returns filtered results."""
+        # Use a very future date so no seeded events match
+        resp = await api_client.post(
+            "/api/export",
+            json={"created_after": "2099-01-01T00:00:00"},
+        )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["events"] == []
+        assert body["metadata"]["eventCount"] == 0
+
+    async def test_export_empty_result(self, api_client, seeded_db):
+        """Empty result returns JSON with empty events array, not 404."""
+        resp = await api_client.post(
+            "/api/export",
+            json={"created_after": "2099-12-31T23:59:59"},
+        )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["events"] == []
+        assert body["metadata"]["eventCount"] == 0
+        assert body["metadata"]["part"] == 1
+
+    async def test_export_invalid_datetime(self, api_client, seeded_db):
+        """Invalid datetime string returns 400."""
+        resp = await api_client.post(
+            "/api/export",
+            json={"created_after": "not-a-datetime"},
+        )
+
+        assert resp.status_code == 400
+        assert "Invalid datetime" in resp.json()["detail"]
+
+    async def test_export_invalid_modified_after(self, api_client, seeded_db):
+        """Invalid modified_after datetime string returns 400."""
+        resp = await api_client.post(
+            "/api/export",
+            json={"modified_after": "garbage"},
+        )
+
+        assert resp.status_code == 400
+        assert "Invalid datetime" in resp.json()["detail"]
+
+    async def test_export_filters_in_metadata(self, api_client, seeded_db):
+        """Filter values are included in the response metadata."""
+        resp = await api_client.post(
+            "/api/export",
+            json={"created_after": "2020-01-01T00:00:00"},
+        )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["metadata"]["filters"]["created_after"] == "2020-01-01T00:00:00"
+        assert body["metadata"]["filters"]["modified_after"] is None
+
+    async def test_export_events_have_correct_format(self, api_client, seeded_db):
+        """Exported events have event_dates key, not dates; no source-level fields."""
+        resp = await api_client.post("/api/export", json={})
+        body = resp.json()
+
+        for event in body["events"]:
+            assert "event_dates" in event
+            assert "dates" not in event
+            assert "id" not in event
+            assert "source_type" not in event

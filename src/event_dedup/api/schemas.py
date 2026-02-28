@@ -171,6 +171,13 @@ class DismissRequest(BaseModel):
     reason: str | None = None
 
 
+class ExportRequest(BaseModel):
+    """Request body for POST /api/export."""
+
+    created_after: str | None = None  # ISO datetime string
+    modified_after: str | None = None  # ISO datetime string
+
+
 class AuditLogEntry(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
