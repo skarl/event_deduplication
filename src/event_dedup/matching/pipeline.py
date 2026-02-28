@@ -1,14 +1,17 @@
 """Matching pipeline orchestrator.
 
 Scores all candidate pairs using the four signal scorers and the
-weighted combiner.  This is a PURE FUNCTION -- no database access.
-It takes event dicts and a ``MatchingConfig``, and returns scored
-decisions for every candidate pair.
+weighted combiner, then clusters matches and synthesizes canonical
+events.  All functions are PURE -- no database access.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from event_dedup.clustering.graph_cluster import ClusterResult
 
 from event_dedup.matching.candidate_pairs import (
     CandidatePairStats,
@@ -141,3 +144,123 @@ def get_match_pairs(result: MatchResult) -> set[tuple[str, str]]:
         for d in result.decisions
         if d.decision == "match"
     }
+
+
+# ---------------------------------------------------------------------------
+# Full pipeline: blocking -> scoring -> clustering -> synthesis
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class PipelineResult:
+    """Complete result from the full deduplication pipeline.
+
+    Attributes:
+        match_result: Scoring phase output.
+        cluster_result: Clustering phase output.
+        canonical_events: Synthesized canonical events (one per cluster).
+        canonical_count: Total number of canonical events.
+        flagged_count: Number of canonical events from flagged clusters.
+    """
+
+    match_result: MatchResult
+    cluster_result: ClusterResult
+    canonical_events: list[dict]
+    canonical_count: int
+    flagged_count: int
+
+
+def run_full_pipeline(
+    events: list[dict], config: MatchingConfig
+) -> PipelineResult:
+    """Full pipeline: blocking -> scoring -> clustering -> synthesis.
+
+    This is a PURE FUNCTION -- no database access.  Takes event dicts
+    and configuration, returns the complete deduplication result
+    including synthesized canonical events.
+
+    Args:
+        events: List of event dicts with all fields required by
+            scorers, blocking, and synthesis.
+        config: Full matching configuration.
+
+    Returns:
+        A ``PipelineResult`` with match decisions, clusters, and
+        canonical events.
+    """
+    # Lazy imports to avoid circular dependency
+    # (graph_cluster imports MatchDecisionRecord from this module)
+    from event_dedup.canonical.synthesizer import synthesize_canonical
+    from event_dedup.clustering.graph_cluster import cluster_matches
+
+    # Step 1: Score candidate pairs
+    match_result = score_candidate_pairs(events, config)
+
+    # Step 2: Cluster matches
+    all_event_ids = [e["id"] for e in events]
+    events_by_id = {e["id"]: e for e in events}
+    cluster_result = cluster_matches(
+        match_result.decisions, all_event_ids, config.cluster, events_by_id
+    )
+
+    # Step 3: Synthesize canonical events
+    canonical_events: list[dict] = []
+
+    for cluster in cluster_result.clusters:
+        sources = [events_by_id[eid] for eid in cluster]
+        canonical = synthesize_canonical(sources, config.canonical)
+        canonical["needs_review"] = False
+        canonical["match_confidence"] = _avg_cluster_confidence(
+            cluster, match_result.decisions
+        )
+        canonical_events.append(canonical)
+
+    for cluster in cluster_result.flagged_clusters:
+        sources = [events_by_id[eid] for eid in cluster]
+        canonical = synthesize_canonical(sources, config.canonical)
+        canonical["needs_review"] = True
+        canonical["match_confidence"] = _avg_cluster_confidence(
+            cluster, match_result.decisions
+        )
+        canonical_events.append(canonical)
+
+    return PipelineResult(
+        match_result=match_result,
+        cluster_result=cluster_result,
+        canonical_events=canonical_events,
+        canonical_count=len(canonical_events),
+        flagged_count=len(cluster_result.flagged_clusters),
+    )
+
+
+def extract_predicted_pairs(
+    result: PipelineResult,
+) -> set[tuple[str, str]]:
+    """Extract match pairs from a pipeline result for evaluation.
+
+    Returns the set of canonically ordered ``(event_id_a, event_id_b)``
+    pairs that were scored as ``"match"``.
+    """
+    return get_match_pairs(result.match_result)
+
+
+def _avg_cluster_confidence(
+    cluster: set[str],
+    decisions: list[MatchDecisionRecord],
+) -> float | None:
+    """Compute average combined_score for match decisions within a cluster.
+
+    Returns ``None`` for singleton clusters (no internal decisions).
+    """
+    cluster_decisions = [
+        d
+        for d in decisions
+        if d.decision == "match"
+        and d.event_id_a in cluster
+        and d.event_id_b in cluster
+    ]
+    if not cluster_decisions:
+        return None
+    return sum(d.combined_score_value for d in cluster_decisions) / len(
+        cluster_decisions
+    )

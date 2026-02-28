@@ -16,6 +16,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from event_dedup.evaluation.metrics import MetricsResult, compute_metrics, format_metrics
+from event_dedup.matching.config import MatchingConfig, load_matching_config
+from event_dedup.matching.pipeline import get_match_pairs, score_candidate_pairs
 from event_dedup.models.ground_truth import GroundTruthPair
 from event_dedup.models.source_event import SourceEvent
 
@@ -226,3 +228,114 @@ async def run_threshold_sweep(
     print("=" * 80 + "\n")
 
     return results
+
+
+# ---------------------------------------------------------------------------
+# Multi-signal evaluation (Phase 2+)
+# ---------------------------------------------------------------------------
+
+
+def generate_predictions_multisignal(
+    events: list[dict],
+    config: MatchingConfig,
+) -> set[tuple[str, str]]:
+    """Generate predictions using the multi-signal scoring pipeline.
+
+    This is a pure function that replaces the Phase 1 title-only
+    prediction with the full multi-signal pipeline (blocking +
+    4-signal scoring + threshold decisions).
+
+    Args:
+        events: List of event dicts with all fields required by
+            the scoring pipeline.
+        config: Full matching configuration.
+
+    Returns:
+        Set of canonically ordered ``(event_id_a, event_id_b)`` tuples
+        predicted as duplicates.
+    """
+    match_result = score_candidate_pairs(events, config)
+    return get_match_pairs(match_result)
+
+
+async def run_multisignal_evaluation(
+    session: AsyncSession,
+    config: MatchingConfig,
+) -> EvaluationResult:
+    """Run evaluation using multi-signal matching against ground truth.
+
+    Loads all source events from the database, converts them to dicts
+    with all fields needed by the scoring pipeline, generates
+    predictions using ``generate_predictions_multisignal``, and
+    computes metrics against ground truth.
+
+    Args:
+        session: Async SQLAlchemy session.
+        config: Full matching configuration.
+
+    Returns:
+        EvaluationResult with metrics and error analysis.
+    """
+    gt_same, gt_diff = await load_ground_truth(session)
+
+    # Load all source events with dates
+    result = await session.execute(
+        select(SourceEvent).options(selectinload(SourceEvent.dates))
+    )
+    source_events = result.scalars().all()
+
+    # Convert to dicts with ALL fields needed by scorers
+    events = []
+    for evt in source_events:
+        events.append(
+            {
+                "id": evt.id,
+                "title": evt.title,
+                "title_normalized": evt.title_normalized,
+                "short_description": evt.short_description,
+                "short_description_normalized": evt.short_description_normalized,
+                "description": evt.description,
+                "highlights": evt.highlights,
+                "location_name": evt.location_name,
+                "location_city": evt.location_city,
+                "location_district": evt.location_district,
+                "location_street": evt.location_street,
+                "location_zipcode": evt.location_zipcode,
+                "geo_latitude": evt.geo_latitude,
+                "geo_longitude": evt.geo_longitude,
+                "geo_confidence": evt.geo_confidence,
+                "source_code": evt.source_code,
+                "source_type": evt.source_type,
+                "blocking_keys": evt.blocking_keys,
+                "categories": evt.categories,
+                "is_family_event": evt.is_family_event,
+                "is_child_focused": evt.is_child_focused,
+                "admission_free": evt.admission_free,
+                "dates": [
+                    {
+                        "date": str(d.date),
+                        "start_time": str(d.start_time) if d.start_time else None,
+                        "end_time": str(d.end_time) if d.end_time else None,
+                        "end_date": str(d.end_date) if d.end_date else None,
+                    }
+                    for d in evt.dates
+                ],
+            }
+        )
+
+    predicted = generate_predictions_multisignal(events, config)
+    metrics = compute_metrics(predicted, gt_same, gt_diff)
+
+    pred_canonical = {(min(a, b), max(a, b)) for a, b in predicted}
+    gt_same_canonical = {(min(a, b), max(a, b)) for a, b in gt_same}
+    gt_diff_canonical = {(min(a, b), max(a, b)) for a, b in gt_diff}
+
+    false_positives = list(pred_canonical & gt_diff_canonical)
+    false_negatives = list(gt_same_canonical - pred_canonical)
+
+    return EvaluationResult(
+        config=EvaluationConfig(),  # placeholder since we use MatchingConfig
+        metrics=metrics,
+        false_positive_pairs=false_positives,
+        false_negative_pairs=false_negatives,
+    )
