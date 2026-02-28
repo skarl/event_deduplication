@@ -172,3 +172,106 @@ export interface ProcessingHistoryEntry {
   events_ingested: number;
   errors: number;
 }
+
+// --- Configuration types ---
+
+export interface ScoringWeights {
+  date: number;
+  geo: number;
+  title: number;
+  description: number;
+}
+
+export interface ThresholdConfig {
+  high: number;
+  low: number;
+}
+
+export interface GeoConfig {
+  max_distance_km: number;
+  min_confidence: number;
+  neutral_score: number;
+}
+
+export interface DateConfig {
+  time_tolerance_minutes: number;
+  time_close_minutes: number;
+  close_factor: number;
+  far_factor: number;
+}
+
+export interface TitleConfig {
+  primary_weight: number;
+  secondary_weight: number;
+  blend_lower: number;
+  blend_upper: number;
+  cross_source_type: TitleConfig | null;
+}
+
+export interface ClusterConfig {
+  max_cluster_size: number;
+  min_internal_similarity: number;
+}
+
+export interface FieldStrategies {
+  title: string;
+  short_description: string;
+  description: string;
+  highlights: string;
+  location_name: string;
+  location_city: string;
+  location_street: string;
+  geo: string;
+  categories: string;
+  is_family_event: string;
+  is_child_focused: string;
+  admission_free: string;
+}
+
+export interface CanonicalConfig {
+  field_strategies: FieldStrategies;
+}
+
+export interface AIConfigResponse {
+  enabled: boolean;
+  model: string;
+  temperature: number;
+  max_output_tokens: number;
+  max_concurrent_requests: number;
+  confidence_threshold: number;
+  cache_enabled: boolean;
+  cost_per_1m_input_tokens: number;
+  cost_per_1m_output_tokens: number;
+}
+
+export interface CategoryWeightsConfig {
+  priority: string[];
+  overrides: Record<string, ScoringWeights>;
+}
+
+export interface ConfigResponse {
+  scoring: ScoringWeights;
+  thresholds: ThresholdConfig;
+  geo: GeoConfig;
+  date: DateConfig;
+  title: TitleConfig;
+  cluster: ClusterConfig;
+  canonical: CanonicalConfig;
+  ai: AIConfigResponse;
+  category_weights: CategoryWeightsConfig;
+  has_api_key: boolean;
+  updated_at: string | null;
+}
+
+export interface ConfigUpdateRequest {
+  scoring?: Partial<ScoringWeights>;
+  thresholds?: Partial<ThresholdConfig>;
+  geo?: Partial<GeoConfig>;
+  date?: Partial<DateConfig>;
+  title?: Partial<TitleConfig>;
+  cluster?: Partial<ClusterConfig>;
+  canonical?: Partial<CanonicalConfig>;
+  ai?: Partial<AIConfigResponse>;
+  category_weights?: Partial<CategoryWeightsConfig>;
+  ai_api_key?: string;
+}

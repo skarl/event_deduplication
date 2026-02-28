@@ -2,6 +2,7 @@ import type {
   CanonicalEventDetail, CanonicalEventSummary, EventFilters, PaginatedResponse,
   SplitRequest, SplitResponse, MergeRequest, MergeResponse,
   DismissRequest, AuditLogEntry, DashboardStats, ProcessingHistoryEntry,
+  ConfigResponse, ConfigUpdateRequest,
 } from '../types';
 
 const API_BASE = '/api';
@@ -126,5 +127,26 @@ export async function searchCanonicalEvents(
   const params = new URLSearchParams({ q, page: '1', size: String(size) });
   const res = await fetch(`${API_BASE}/canonical-events?${params}`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+// --- Configuration ---
+
+export async function fetchConfig(): Promise<ConfigResponse> {
+  const res = await fetch(`${API_BASE}/config`);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+export async function updateConfig(updates: ConfigUpdateRequest): Promise<ConfigResponse> {
+  const res = await fetch(`${API_BASE}/config`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+    throw new Error(err.detail || `API error: ${res.status}`);
+  }
   return res.json();
 }
