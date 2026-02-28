@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 5: AI-Assisted Matching -- IN PROGRESS
+**Current focus:** Phase 5: AI-Assisted Matching -- COMPLETE
 
 ## Current Position
 
-Phase: 5 of 7 (AI-Assisted Matching) -- IN PROGRESS
-Plan: 1 of 2 in current phase (05-01 complete, 05-02 planned)
-Status: Plan 05-01 (AI Matching Infrastructure) complete. Ready for 05-02.
-Last activity: 2026-02-28 -- Plan 05-01 executed (2 tasks, 19 tests, 3m)
+Phase: 5 of 7 (AI-Assisted Matching) -- COMPLETE
+Plan: 2 of 2 in current phase (05-01 complete, 05-02 complete)
+Status: Phase 5 complete. All AI matching infrastructure and pipeline integration done.
+Last activity: 2026-02-28 -- Plan 05-02 executed (2 tasks, 14 tests, 4m)
 
-Progress: [███████░░░] 64%
+Progress: [████████░░] 71%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: 4.0m
-- Total execution time: 0.87 hours
+- Total execution time: 0.93 hours
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [███████░░░] 64%
 | 2 | 4/4 | 17m | 4.3m |
 | 3 | 2/2 | 7m | 3.5m |
 | 4 | 2/2 | 13m | 6.5m |
-| 5 | 1/2 | 3m | 3m |
+| 5 | 2/2 | 7m | 3.5m |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (5m), 03-02 (2m), 04-01 (8m), 04-02 (5m), 05-01 (3m)
+- Last 5 plans: 03-02 (2m), 04-01 (8m), 04-02 (5m), 05-01 (3m), 05-02 (4m)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -95,6 +95,11 @@ Recent decisions affecting current work:
 - [05-01]: Cache staleness detection by model name comparison (auto-invalidates on model upgrade)
 - [05-01]: AIMatchingConfig defaults to enabled=False for safe rollout
 - [05-01]: Gemini 2.5 Flash pricing for cost estimation (0.30/1M input, 2.50/1M output)
+- [05-02]: resolve_ambiguous_pairs uses asyncio.Semaphore for concurrent API call limiting
+- [05-02]: _apply_ai_result maps same->match, different->no_match with confidence threshold gate
+- [05-02]: rebuild_pipeline_result re-clusters only when ambiguous pairs were actually resolved
+- [05-02]: _maybe_resolve_ai is the single integration point for both process_new_file and process_file_batch
+- [05-02]: AI matching auto-enables when GEMINI_API_KEY env var is set (no config file change needed)
 
 ### Ground Truth Dataset
 
@@ -117,6 +122,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 05-01-PLAN.md
+Stopped at: Completed 05-02-PLAN.md
 Resume file: N/A
-Next action: Execute Plan 05-02 (pipeline integration)
+Next action: Phase 6 planning (next phase)
