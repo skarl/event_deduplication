@@ -2,7 +2,7 @@
 title: Prevent false merging of different movies at the same cinema
 area: matching
 priority: high
-status: open
+status: resolved
 created: 2026-02-28
 ---
 
@@ -69,10 +69,22 @@ The current scoring likely produces high similarity because:
 
 For cinema/theater/concert venues, the **title is the primary differentiator**. Multiple events can share everything (venue, dates, category, description template) except the title. The title scorer needs to be strong enough to prevent merging when titles clearly differ.
 
-## Investigation Steps
+## Resolution (2026-02-28)
 
-1. Check title scorer behavior — does it produce a low enough score for "Woodwalkers 2" vs "G.O.A.T."?
-2. Check how scores are combined — can a low title score veto a merge even when all other scores are high?
-3. Consider whether a "veto" mechanism is needed: if title similarity is below a threshold (e.g., < 0.3), block the merge regardless of other scores
-4. Check if the description scorer is inflating scores due to shared template text ("Kinderfilm im Scala Haslach")
-5. Review if clustering (blocking) puts these in the same cluster first, and whether the pairwise scoring then fails to separate them
+**Root cause:** When date (1.0), geo (1.0), and description (1.0) all score perfectly — as happens for different movies at the same cinema with template descriptions like "Kinderfilm im Scala Haslach" — even a title score of 0.22 produces a combined score of 0.765, just above the 0.75 auto-merge threshold. The weighted average has no mechanism to prevent a match when one signal strongly disagrees.
+
+**Fix: Title veto threshold** (`thresholds.title_veto: 0.30`)
+
+Added a configurable title veto to the `decide()` function. When the title score falls below the veto threshold, the decision is capped at "ambiguous" regardless of the combined score. This prevents auto-merge while still allowing human review.
+
+**Verified results:**
+- G.O.A.T.(elt) vs Woodwalkers: title=0.22 < 0.30 → VETOED to ambiguous (was match)
+- G.O.A.T.(elt) vs Checker Tobi: title=0.24 < 0.30 → VETOED to ambiguous (was match)
+- G.O.A.T.(elt) vs G.O.A.T.(elz): title=0.45 > 0.30 → match (correct, same movie)
+
+**Files changed:**
+- `src/event_dedup/matching/config.py` — Added `title_veto` to ThresholdConfig
+- `src/event_dedup/matching/combiner.py` — Updated `decide()` with veto logic
+- `src/event_dedup/matching/pipeline.py` — Pass title_score to decide()
+- `config/matching.yaml` — Added `title_veto: 0.30`
+- `tests/test_combiner.py` — 8 new tests for veto behavior

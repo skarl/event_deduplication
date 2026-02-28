@@ -39,6 +39,7 @@ class ThresholdConfig(BaseModel):
 
     high: float = 0.75
     low: float = 0.35
+    title_veto: float = 0.30
 
 
 class GeoConfig(BaseModel):

@@ -16,6 +16,7 @@ thresholds:
   high: 0.75           # Combined score >= high  -> "match"
   low: 0.35            # Combined score <= low   -> "no_match"
                         # Between low and high    -> "ambiguous"
+  title_veto: 0.30     # Title score below this vetoes auto-merge -> "ambiguous"
 
 # --- Geographic scoring ---
 geo:

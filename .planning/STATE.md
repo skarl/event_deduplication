@@ -57,7 +57,7 @@ Regenerate: `uv run python scripts/generate_ground_truth.py`
 
 ### Pending Todos
 
-- **[high]** Prevent false merging of different movies at same cinema (`.planning/todos/cinema-movies-false-merge-same-venue.md`)
+None.
 
 ### Blockers/Concerns
 
@@ -89,6 +89,7 @@ None.
 - Separate run_export from main() for CLI testability via monkeypatch
 - Native datetime-local inputs for frontend export (no extra library)
 - Blob download via URL.createObjectURL for frontend file save
+- Title veto threshold (0.30) to prevent auto-merge when titles clearly differ (cinema/venue scenario)
 
 ## Session Continuity
 

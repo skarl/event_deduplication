@@ -50,12 +50,21 @@ def combined_score(
 
 
 def decide(
-    score: float, thresholds: ThresholdConfig | None = None
+    score: float,
+    thresholds: ThresholdConfig | None = None,
+    title_score: float | None = None,
 ) -> str:
     """Apply threshold-based decision logic.
 
+    When *title_score* is provided and falls below
+    ``thresholds.title_veto``, the decision is capped at
+    ``"ambiguous"`` -- the pair will never auto-merge regardless of
+    the combined score.  This prevents false merges for events at
+    the same venue with clearly different titles (e.g. different
+    movies at the same cinema).
+
     Returns:
-        ``"match"`` if score >= high threshold,
+        ``"match"`` if score >= high threshold (and title veto not triggered),
         ``"no_match"`` if score <= low threshold,
         ``"ambiguous"`` otherwise.
     """
@@ -63,6 +72,12 @@ def decide(
         thresholds = ThresholdConfig()
 
     if score >= thresholds.high:
+        if (
+            title_score is not None
+            and thresholds.title_veto > 0
+            and title_score < thresholds.title_veto
+        ):
+            return "ambiguous"
         return "match"
     if score <= thresholds.low:
         return "no_match"

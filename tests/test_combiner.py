@@ -72,3 +72,38 @@ class TestDecide:
         assert decide(0.90, cfg) == "match"
         assert decide(0.10, cfg) == "no_match"
         assert decide(0.05, cfg) == "no_match"
+
+    def test_title_veto_prevents_match(self) -> None:
+        """Low title score vetoes auto-merge even when combined score is above high threshold."""
+        assert decide(0.80, title_score=0.20) == "ambiguous"
+
+    def test_title_veto_allows_match_above_threshold(self) -> None:
+        """Title score above veto threshold allows normal match."""
+        assert decide(0.80, title_score=0.50) == "match"
+
+    def test_title_veto_at_boundary(self) -> None:
+        """Title score exactly at veto threshold is NOT vetoed (< not <=)."""
+        assert decide(0.80, title_score=0.30) == "match"
+
+    def test_title_veto_no_effect_on_no_match(self) -> None:
+        """Title veto doesn't affect no_match decisions."""
+        assert decide(0.20, title_score=0.10) == "no_match"
+
+    def test_title_veto_no_effect_on_ambiguous(self) -> None:
+        """Title veto doesn't affect already-ambiguous decisions."""
+        assert decide(0.50, title_score=0.10) == "ambiguous"
+
+    def test_title_veto_not_passed(self) -> None:
+        """When title_score is not passed, no veto is applied."""
+        assert decide(0.80) == "match"
+
+    def test_title_veto_disabled_when_zero(self) -> None:
+        """Title veto is disabled when threshold is set to 0."""
+        cfg = ThresholdConfig(title_veto=0.0)
+        assert decide(0.80, cfg, title_score=0.10) == "match"
+
+    def test_title_veto_custom_threshold(self) -> None:
+        """Custom veto threshold is respected."""
+        cfg = ThresholdConfig(title_veto=0.50)
+        assert decide(0.80, cfg, title_score=0.40) == "ambiguous"
+        assert decide(0.80, cfg, title_score=0.50) == "match"

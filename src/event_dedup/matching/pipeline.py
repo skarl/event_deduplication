@@ -133,7 +133,7 @@ def score_candidate_pairs(
 
         weights = resolve_weights(evt_a, evt_b, config)
         score = combined_score(signals, weights)
-        dec = decide(score, config.thresholds)
+        dec = decide(score, config.thresholds, title_score=signals.title)
 
         decisions.append(
             MatchDecisionRecord(
