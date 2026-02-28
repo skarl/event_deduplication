@@ -2,7 +2,9 @@
 
 Uses ``token_sort_ratio`` as the primary signal and blends in
 ``token_set_ratio`` only when the primary score falls in an
-ambiguous range.
+ambiguous range.  Titles are case-folded before comparison so
+that ``"WOODWALKERS 2"`` matches ``"Woodwalkers 2"`` and
+German ``ß``/``SS`` differences are handled correctly.
 """
 
 from __future__ import annotations
@@ -33,6 +35,10 @@ def title_score(
 
     if not title_a or not title_b:
         return 0.0
+
+    # Case-fold for case-insensitive comparison (handles ß→ss etc.)
+    title_a = title_a.casefold()
+    title_b = title_b.casefold()
 
     # Determine effective config based on source types
     effective_config = config
