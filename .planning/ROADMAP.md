@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Ground Truth** - Database schema, data models, JSON ingestion, preprocessing, and labeled evaluation dataset
 - [x] **Phase 2: Core Matching Pipeline** - Multi-signal blocking, Tier 1 scoring, graph clustering, and canonical event synthesis
-- [ ] **Phase 3: Pipeline Integration & Deployment** - File watcher, end-to-end pipeline orchestration, Docker containers, and docker-compose
+- [x] **Phase 3: Pipeline Integration & Deployment** - File watcher, end-to-end pipeline orchestration, Docker containers, and docker-compose
 - [ ] **Phase 4: API & Browse Frontend** - FastAPI REST API and React frontend for searching and viewing canonical events
 - [ ] **Phase 5: AI-Assisted Matching** - Gemini Flash integration for ambiguous pairs with caching and cost monitoring
 - [ ] **Phase 6: Manual Review & Operations** - Review queue UI, split/merge operations, audit trail, and batch processing dashboard
@@ -72,7 +72,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md -- Pipeline worker service: file watcher (watchfiles), orchestrator (ingest -> match -> persist), canonical persistence (clear-and-replace), structured logging (structlog)
-- [ ] 03-02-PLAN.md -- Docker infrastructure: Dockerfiles (worker + API + nginx), docker-compose.yml, entrypoint with Alembic, FastAPI skeleton, .dockerignore
+- [x] 03-02-PLAN.md -- Docker infrastructure: Dockerfiles (worker + API + nginx), docker-compose.yml, entrypoint with Alembic, FastAPI skeleton, .dockerignore
 
 ### Phase 4: API & Browse Frontend
 **Goal**: Users can search, browse, and inspect canonical events and their source events through a web interface
@@ -142,7 +142,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 |-------|----------------|--------|-----------|
 | 1. Foundation & Ground Truth | 4/4 | Complete | 2026-02-27 |
 | 2. Core Matching Pipeline | 4/4 | Complete | 2026-02-28 |
-| 3. Pipeline Integration & Deployment | 1/2 | In progress | - |
+| 3. Pipeline Integration & Deployment | 2/2 | Complete | 2026-02-28 |
 | 4. API & Browse Frontend | 0/2 | Not started | - |
 | 5. AI-Assisted Matching | 0/2 | Not started | - |
 | 6. Manual Review & Operations | 0/2 | Not started | - |

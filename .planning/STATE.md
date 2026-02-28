@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 3: Pipeline Integration & Deployment -- IN PROGRESS
+**Current focus:** Phase 3: Pipeline Integration & Deployment -- COMPLETE
 
 ## Current Position
 
-Phase: 3 of 7 (Pipeline Integration & Deployment) -- IN PROGRESS
-Plan: 1 of 2 in current phase (03-01 complete, 03-02 pending)
-Status: Executing Phase 3 Wave 2 (03-02: Docker infrastructure)
-Last activity: 2026-02-28 -- Completed 03-01 pipeline worker service
+Phase: 3 of 7 (Pipeline Integration & Deployment) -- COMPLETE
+Plan: 2 of 2 in current phase (03-01 complete, 03-02 complete)
+Status: Phase 3 complete. Ready for Phase 4 (API & Frontend).
+Last activity: 2026-02-28 -- Completed 03-02 Docker infrastructure
 
-Progress: [████░░░░░░] 40%
+Progress: [█████░░░░░] 45%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 4.2m
-- Total execution time: 0.62 hours
+- Total plans completed: 10
+- Average duration: 4.0m
+- Total execution time: 0.65 hours
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [████░░░░░░] 40%
 | 1 | 4/4 | 20m | 5m |
 | 2 | 4/4 | 17m | 4.3m |
 
-| 3 | 1/2 | 5m | 5m |
+| 3 | 2/2 | 7m | 3.5m |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (4m), 02-03 (2m), 02-04 (6m), 03-01 (5m)
+- Last 5 plans: 02-03 (2m), 02-04 (6m), 03-01 (5m), 03-02 (2m)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -79,6 +79,9 @@ Recent decisions affecting current work:
 - [03-01]: Explicit CanonicalEventSource delete before CanonicalEvent delete for SQLite CASCADE compatibility
 - [03-01]: Source links derived from cluster membership (not field_provenance) for completeness
 - [03-01]: Separate transactions for file ingestion and canonical persistence (clear-and-replace rebuilds all)
+- [03-02]: Python-based health check in Dockerfile.api (urllib.request) to avoid installing curl in slim image
+- [03-02]: Generic entrypoint.sh with exec "$@" so both worker and API containers share the same entrypoint
+- [03-02]: httpx added to dev dependencies for FastAPI TestClient support
 
 ### Ground Truth Dataset
 
@@ -101,6 +104,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 03-01-PLAN.md (pipeline worker service: watcher, orchestrator, persistence, logging)
-Resume file: .planning/phases/03/03-02-PLAN.md
-Next action: Execute 03-02 (Docker infrastructure: Dockerfiles, docker-compose, entrypoint, FastAPI skeleton)
+Stopped at: Completed 03-02-PLAN.md (Docker infrastructure: Dockerfiles, docker-compose, entrypoint, FastAPI skeleton)
+Resume file: Phase 4 planning needed
+Next action: Plan Phase 4 (API & Frontend)

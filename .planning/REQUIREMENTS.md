@@ -66,9 +66,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Deployment
 
-- [ ] **DEPL-01**: All services run as Docker containers (pipeline worker, API server, frontend)
-- [ ] **DEPL-02**: docker-compose.yml defines the full stack including PostgreSQL for development
-- [ ] **DEPL-03**: Environment-based configuration (database connection, watched directory, AI API keys, thresholds)
+- [x] **DEPL-01**: All services run as Docker containers (pipeline worker, API server, frontend)
+- [x] **DEPL-02**: docker-compose.yml defines the full stack including PostgreSQL for development
+- [x] **DEPL-03**: Environment-based configuration (database connection, watched directory, AI API keys, thresholds)
 
 ## v2 Requirements
 
@@ -136,9 +136,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REV-03 | Phase 6: Manual Review & Operations | Pending |
 | REV-04 | Phase 6: Manual Review & Operations | Pending |
 | REV-05 | Phase 6: Manual Review & Operations | Pending |
-| DEPL-01 | Phase 3: Pipeline Integration & Deployment | Pending |
-| DEPL-02 | Phase 3: Pipeline Integration & Deployment | Pending |
-| DEPL-03 | Phase 3: Pipeline Integration & Deployment | Pending |
+| DEPL-01 | Phase 3: Pipeline Integration & Deployment | Complete (03-02) |
+| DEPL-02 | Phase 3: Pipeline Integration & Deployment | Complete (03-02) |
+| DEPL-03 | Phase 3: Pipeline Integration & Deployment | Complete (03-02) |
 
 **Coverage:**
 - v1 requirements: 39 total
@@ -147,4 +147,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-28 after Plan 02-04 completion (Phase 2 complete: MTCH-01/03/04/05, CANL-01/02/03/04)*
+*Last updated: 2026-02-28 after Plan 03-02 completion (Phase 3 complete: DEPL-01/02/03)*
