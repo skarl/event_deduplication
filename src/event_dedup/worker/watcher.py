@@ -14,7 +14,6 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from watchfiles import Change, awatch
 
 from event_dedup.ingestion.file_processor import FileProcessor
-from event_dedup.matching.config import MatchingConfig
 from event_dedup.worker.orchestrator import process_file_batch, process_new_file
 
 
@@ -27,7 +26,6 @@ async def watch_and_process(
     data_dir: Path,
     file_processor: FileProcessor,
     session_factory: async_sessionmaker,
-    matching_config: MatchingConfig,
     stop_event: asyncio.Event | None = None,
 ) -> None:
     """Watch data_dir for new JSON files and process them.
@@ -36,11 +34,13 @@ async def watch_and_process(
     (multiple files detected in one watch cycle) are handled via
     ``process_file_batch`` for efficiency.
 
+    The matching configuration is loaded from the database (or YAML
+    fallback) on each pipeline run by the orchestrator.
+
     Args:
         data_dir: Directory to watch.
         file_processor: Configured FileProcessor instance.
         session_factory: Async session factory for DB access.
-        matching_config: Matching pipeline configuration.
         stop_event: Optional event to signal graceful shutdown.
     """
     log = structlog.get_logger().bind(watch_dir=str(data_dir))
@@ -54,11 +54,11 @@ async def watch_and_process(
 
         if len(file_paths) == 1:
             await process_new_file(
-                file_paths[0], file_processor, session_factory, matching_config
+                file_paths[0], file_processor, session_factory
             )
         else:
             await process_file_batch(
-                file_paths, file_processor, session_factory, matching_config
+                file_paths, file_processor, session_factory
             )
 
     log.info("watcher_stopped")

@@ -153,3 +153,40 @@ def load_matching_config(path: Path) -> MatchingConfig:
         data = yaml.safe_load(f) or {}
 
     return MatchingConfig(**data)
+
+
+async def load_config_for_run(session_factory) -> MatchingConfig:
+    """Load the matching configuration from the database for a pipeline run.
+
+    Falls back to YAML config (and ``GEMINI_API_KEY`` env var) when no
+    database configuration has been saved yet.
+    """
+    import sqlalchemy as sa
+
+    from event_dedup.config.encryption import decrypt_value
+    from event_dedup.config.settings import get_settings
+    from event_dedup.models.config_settings import ConfigSettings
+
+    log = structlog.get_logger()
+
+    async with session_factory() as session:
+        result = await session.execute(
+            sa.select(ConfigSettings).where(ConfigSettings.id == 1)
+        )
+        row = result.scalar_one_or_none()
+
+    if row is not None and row.config_json:
+        config = MatchingConfig(**row.config_json)
+        if row.encrypted_api_key:
+            config.ai.api_key = decrypt_value(row.encrypted_api_key)
+        log.info("config_loaded_from_db", updated_at=str(row.updated_at))
+        return config
+
+    # Fallback: YAML config + env var
+    settings = get_settings()
+    config = load_matching_config(settings.matching_config_path)
+    if settings.gemini_api_key:
+        config.ai.enabled = True
+        config.ai.api_key = settings.gemini_api_key
+    log.info("config_loaded_from_yaml_fallback")
+    return config

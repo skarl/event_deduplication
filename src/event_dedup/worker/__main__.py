@@ -9,7 +9,6 @@ from event_dedup.config.settings import get_settings
 from event_dedup.db.session import get_session_factory
 from event_dedup.ingestion.file_processor import FileProcessor
 from event_dedup.logging_config import configure_logging
-from event_dedup.matching.config import load_matching_config
 from event_dedup.worker.orchestrator import process_existing_files
 from event_dedup.worker.watcher import watch_and_process
 
@@ -20,12 +19,6 @@ async def main() -> None:
     log = structlog.get_logger()
 
     session_factory = get_session_factory()
-    matching_config = load_matching_config(settings.matching_config_path)
-
-    # Override AI config from environment
-    if settings.gemini_api_key:
-        matching_config.ai.enabled = True
-        matching_config.ai.api_key = settings.gemini_api_key
 
     file_processor = FileProcessor(
         session_factory=session_factory,
@@ -49,13 +42,13 @@ async def main() -> None:
 
     # Process existing unprocessed files on startup
     processed = await process_existing_files(
-        data_dir, file_processor, session_factory, matching_config
+        data_dir, file_processor, session_factory
     )
     log.info("startup_complete", existing_files_processed=processed)
 
     # Watch for new files
     await watch_and_process(
-        data_dir, file_processor, session_factory, matching_config, stop_event=stop_event
+        data_dir, file_processor, session_factory, stop_event=stop_event
     )
     log.info("worker_shutdown")
 

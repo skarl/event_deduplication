@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from event_dedup.api.routes.canonical_events import router as canonical_events_router
+from event_dedup.api.routes.config import router as config_router
 from event_dedup.api.routes.dashboard import router as dashboard_router
 from event_dedup.api.routes.health import router as health_router
 from event_dedup.api.routes.review import audit_router, router as review_router
@@ -20,6 +21,7 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(canonical_events_router)
+app.include_router(config_router)
 app.include_router(review_router)
 app.include_router(audit_router)
 app.include_router(dashboard_router)

@@ -55,7 +55,6 @@ async def test_watch_and_process_stops_on_stop_event(tmp_path: Path) -> None:
         data_dir=tmp_path,
         file_processor=None,  # type: ignore[arg-type]
         session_factory=None,  # type: ignore[arg-type]
-        matching_config=None,  # type: ignore[arg-type]
         stop_event=stop_event,
     )
     # If we reach here without hanging, the test passes

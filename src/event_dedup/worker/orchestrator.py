@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from event_dedup.ai_matching.resolver import resolve_ambiguous_pairs
 from event_dedup.ingestion.file_processor import FileProcessor
-from event_dedup.matching.config import MatchingConfig
+from event_dedup.matching.config import MatchingConfig, load_config_for_run
 from event_dedup.matching.pipeline import rebuild_pipeline_result, run_full_pipeline
 from event_dedup.worker.persistence import (
     load_all_events_as_dicts,
@@ -61,7 +61,7 @@ async def process_new_file(
     file_path: Path,
     file_processor: FileProcessor,
     session_factory: async_sessionmaker,
-    matching_config: MatchingConfig,
+    matching_config: MatchingConfig | None = None,
 ) -> dict:
     """Full pipeline: ingest file -> load all events -> match -> persist canonicals.
 
@@ -69,11 +69,15 @@ async def process_new_file(
         file_path: Path to the new JSON file.
         file_processor: Configured FileProcessor instance.
         session_factory: Async session factory for DB access.
-        matching_config: Matching pipeline configuration.
+        matching_config: Matching pipeline configuration.  If ``None``,
+            the config is loaded from the database (or YAML fallback)
+            for each run.
 
     Returns:
         Stats dict with status and per-file processing metrics.
     """
+    if matching_config is None:
+        matching_config = await load_config_for_run(session_factory)
     log = logger.bind(file=file_path.name)
 
     # Step 1: Ingest file
@@ -131,7 +135,7 @@ async def process_existing_files(
     data_dir: Path,
     file_processor: FileProcessor,
     session_factory: async_sessionmaker,
-    matching_config: MatchingConfig,
+    matching_config: MatchingConfig | None = None,
 ) -> int:
     """Scan directory for existing .json files and process each.
 
@@ -142,7 +146,8 @@ async def process_existing_files(
         data_dir: Directory to scan for JSON files.
         file_processor: Configured FileProcessor instance.
         session_factory: Async session factory for DB access.
-        matching_config: Matching pipeline configuration.
+        matching_config: Matching pipeline configuration.  If ``None``,
+            each file will load config from DB per run.
 
     Returns:
         Number of files that completed processing (not skipped/failed).
@@ -170,7 +175,7 @@ async def process_file_batch(
     file_paths: list[Path],
     file_processor: FileProcessor,
     session_factory: async_sessionmaker,
-    matching_config: MatchingConfig,
+    matching_config: MatchingConfig | None = None,
 ) -> list[dict]:
     """Process a batch of files that arrived simultaneously.
 
@@ -181,11 +186,14 @@ async def process_file_batch(
         file_paths: List of JSON file paths to process.
         file_processor: Configured FileProcessor instance.
         session_factory: Async session factory for DB access.
-        matching_config: Matching pipeline configuration.
+        matching_config: Matching pipeline configuration.  If ``None``,
+            the config is loaded from the database (or YAML fallback).
 
     Returns:
         List of stats dicts, one per file.
     """
+    if matching_config is None:
+        matching_config = await load_config_for_run(session_factory)
     log = logger.bind(batch_size=len(file_paths))
     results = []
     any_completed = False
