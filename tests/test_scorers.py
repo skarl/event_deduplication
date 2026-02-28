@@ -62,9 +62,45 @@ class TestDateScore:
         cfg = DateConfig(time_tolerance_minutes=30, time_close_minutes=90, far_factor=0.3)
         a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
         b = {"dates": [{"date": "2026-03-01", "start_time": "14:00"}]}
-        # 240 min apart -> far_factor=0.3
+        # 240 min apart -> beyond 2h threshold -> time_gap_penalty_factor=0.15
+        score = date_score(a, b, config=cfg)
+        assert score == pytest.approx(0.15)
+
+    def test_time_gap_boundary_below(self) -> None:
+        """119 min apart -> still within 2h threshold -> far_factor."""
+        cfg = DateConfig()
+        a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
+        b = {"dates": [{"date": "2026-03-01", "start_time": "11:59"}]}
+        # 119 min apart -> <= 120 min -> far_factor=0.3
         score = date_score(a, b, config=cfg)
         assert score == pytest.approx(0.3)
+
+    def test_time_gap_boundary_at(self) -> None:
+        """121 min apart -> exceeds 2h threshold -> time_gap_penalty_factor."""
+        cfg = DateConfig()
+        a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
+        b = {"dates": [{"date": "2026-03-01", "start_time": "12:01"}]}
+        # 121 min apart -> > 120 min -> time_gap_penalty_factor=0.15
+        score = date_score(a, b, config=cfg)
+        assert score == pytest.approx(0.15)
+
+    def test_time_gap_custom_threshold(self) -> None:
+        """3h threshold, 150 min apart -> still within threshold -> far_factor."""
+        cfg = DateConfig(time_gap_penalty_hours=3.0)
+        a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
+        b = {"dates": [{"date": "2026-03-01", "start_time": "12:30"}]}
+        # 150 min apart -> <= 180 min -> far_factor=0.3
+        score = date_score(a, b, config=cfg)
+        assert score == pytest.approx(0.3)
+
+    def test_time_gap_custom_threshold_exceeded(self) -> None:
+        """3h threshold, 201 min apart -> exceeds threshold -> penalty_factor."""
+        cfg = DateConfig(time_gap_penalty_hours=3.0, time_gap_penalty_factor=0.1)
+        a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
+        b = {"dates": [{"date": "2026-03-01", "start_time": "13:21"}]}
+        # 201 min apart -> > 180 min -> time_gap_penalty_factor=0.1
+        score = date_score(a, b, config=cfg)
+        assert score == pytest.approx(0.1)
 
     def test_missing_times_benefit_of_doubt(self) -> None:
         a = {"dates": [{"date": "2026-03-01", "start_time": "14:00"}]}
@@ -140,6 +176,50 @@ class TestGeoScore:
     def test_custom_neutral_score(self) -> None:
         cfg = GeoConfig(neutral_score=0.3)
         assert geo_score({}, {}, config=cfg) == 0.3
+
+    def test_same_venue_name(self) -> None:
+        """Same coordinates, same venue name -> 1.0."""
+        a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Stadttheater"}
+        b = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Stadttheater"}
+        assert geo_score(a, b) == 1.0
+
+    def test_different_venue_name_close(self) -> None:
+        """Same coordinates, completely different venue names -> 0.5."""
+        a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Stadttheater"}
+        b = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Messehalle"}
+        score = geo_score(a, b)
+        assert score == pytest.approx(0.5)
+
+    def test_venue_name_missing_one(self) -> None:
+        """Same coordinates, one venue name missing -> 1.0 (no penalty)."""
+        a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Stadttheater"}
+        b = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95}
+        assert geo_score(a, b) == 1.0
+
+    def test_venue_name_missing_both(self) -> None:
+        """Same coordinates, both venue names missing -> 1.0 (no penalty)."""
+        a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95}
+        b = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95}
+        assert geo_score(a, b) == 1.0
+
+    def test_venue_name_far_distance(self) -> None:
+        """Far apart, different venue names -> distance-only score (no venue penalty)."""
+        a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Stadttheater"}
+        # ~5km north -> beyond venue_match_distance_km=1.0
+        b = {"geo_latitude": 48.045, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Messehalle"}
+        score = geo_score(a, b)
+        # Should be distance-only, no venue factor applied
+        score_no_names = geo_score(
+            {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95},
+            {"geo_latitude": 48.045, "geo_longitude": 7.8, "geo_confidence": 0.95},
+        )
+        assert score == pytest.approx(score_no_names)
+
+    def test_similar_venue_name(self) -> None:
+        """Same coordinates, similar venue names -> 1.0 (similarity >= 0.5)."""
+        a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Stadttheater Freiburg"}
+        b = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95, "location_name": "Freiburg Stadttheater"}
+        assert geo_score(a, b) == 1.0
 
 
 # ===========================================================================

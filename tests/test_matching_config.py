@@ -74,6 +74,8 @@ class TestDefaultValues:
         assert cfg.geo.max_distance_km == 10.0
         assert cfg.geo.min_confidence == 0.85
         assert cfg.geo.neutral_score == 0.5
+        assert cfg.geo.venue_match_distance_km == 1.0
+        assert cfg.geo.venue_mismatch_factor == 0.5
 
     def test_default_date(self) -> None:
         cfg = MatchingConfig()
@@ -81,6 +83,8 @@ class TestDefaultValues:
         assert cfg.date.time_close_minutes == 90
         assert cfg.date.close_factor == 0.7
         assert cfg.date.far_factor == 0.3
+        assert cfg.date.time_gap_penalty_hours == 2.0
+        assert cfg.date.time_gap_penalty_factor == 0.15
 
     def test_default_title(self) -> None:
         cfg = MatchingConfig()
