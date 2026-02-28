@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Pipeline Integration & Deployment** - File watcher, end-to-end pipeline orchestration, Docker containers, and docker-compose
 - [x] **Phase 4: API & Browse Frontend** - FastAPI REST API and React frontend for searching and viewing canonical events
 - [x] **Phase 5: AI-Assisted Matching** - Gemini Flash integration for ambiguous pairs with caching and cost monitoring
-- [ ] **Phase 6: Manual Review & Operations** - Review queue UI, split/merge operations, audit trail, and batch processing dashboard
+- [x] **Phase 6: Manual Review & Operations** - Review queue UI, split/merge operations, audit trail, and batch processing dashboard
 - [ ] **Phase 7: Accuracy Refinement** - German dialect synonyms, category-aware weights, source-type calibration
 
 ## Phase Details
@@ -118,7 +118,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md -- AuditLog model, Alembic migration, source_event_to_dict helper, review operations service (split/merge), API routes (review/split, review/merge, review/queue, audit-log, dashboard/stats, dashboard/processing-history), API tests
-- [ ] 06-02-PLAN.md -- Review queue page, split dialog, merge dialog, dashboard page, audit trail component, navigation updates, TanStack Query hooks, API client extensions
+- [x] 06-02-PLAN.md -- Review queue page, split dialog, merge dialog, dashboard page, audit trail component, navigation updates, TanStack Query hooks, API client extensions
 
 ### Phase 7: Accuracy Refinement
 **Goal**: Matching accuracy is improved for German-specific edge cases through synonym dictionaries, category-aware weighting, and source-type calibration
@@ -145,5 +145,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Pipeline Integration & Deployment | 2/2 | Complete | 2026-02-28 |
 | 4. API & Browse Frontend | 2/2 | Complete | 2026-02-28 |
 | 5. AI-Assisted Matching | 2/2 | Complete | 2026-02-28 |
-| 6. Manual Review & Operations | 1/2 | In progress | - |
+| 6. Manual Review & Operations | 2/2 | Complete | 2026-02-28 |
 | 7. Accuracy Refinement | 0/1 | Not started | - |

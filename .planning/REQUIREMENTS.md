@@ -147,4 +147,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-28 after Plan 05-02 completion (AI-01/02 complete, Phase 5 done)*
+*Last updated: 2026-02-28 after Plan 06-02 completion (REV-01..05 frontend complete, Phase 6 done)*

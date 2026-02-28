@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 6: Manual Review & Operations -- IN PROGRESS
+**Current focus:** Phase 6: Manual Review & Operations -- COMPLETE
 
 ## Current Position
 
-Phase: 6 of 7 (Manual Review & Operations) -- IN PROGRESS
-Plan: 1 of 2 in current phase (06-01 complete)
-Status: Plan 06-01 complete. Backend review operations (split/merge/queue/dismiss/audit/dashboard) done with 13 tests.
-Last activity: 2026-02-28 -- Plan 06-01 executed (2 tasks, 13 tests, 6m)
+Phase: 6 of 7 (Manual Review & Operations) -- COMPLETE
+Plan: 2 of 2 in current phase (06-02 complete, phase done)
+Status: Phase 6 complete. Frontend review UI (review queue, split/merge dialogs, audit trail, dashboard) done.
+Last activity: 2026-02-28 -- Plan 06-02 executed (3 tasks, 4m)
 
-Progress: [████████░░] 79%
+Progress: [████████░░] 84%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 16
 - Average duration: 4.1m
-- Total execution time: 1.03 hours
+- Total execution time: 1.10 hours
 
 **By Phase:**
 
@@ -32,10 +32,10 @@ Progress: [████████░░] 79%
 | 3 | 2/2 | 7m | 3.5m |
 | 4 | 2/2 | 13m | 6.5m |
 | 5 | 2/2 | 7m | 3.5m |
-| 6 | 1/2 | 6m | 6m |
+| 6 | 2/2 | 10m | 5m |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (8m), 04-02 (5m), 05-01 (3m), 05-02 (4m), 06-01 (6m)
+- Last 5 plans: 04-02 (5m), 05-01 (3m), 05-02 (4m), 06-01 (6m), 06-02 (4m)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -104,6 +104,10 @@ Recent decisions affecting current work:
 - [06-01]: Use SQL DELETE (not ORM session.delete) for canonical event deletion to avoid cascade conflicts with SQLAlchemy identity map
 - [06-01]: Separate audit_router at /api prefix for /api/audit-log endpoint (not nested under /api/review)
 - [06-01]: Replaced datetime.utcnow() with datetime.now(dt.UTC) to fix deprecation warnings
+- [06-02]: Nginx config already proxies all /api/* sub-paths (no changes needed for new endpoints)
+- [06-02]: Debounced search (300ms) with useQuery for canonical event search in split/merge dialogs
+- [06-02]: MergeDialog navigates to surviving event after merge since current event is deleted
+- [06-02]: Split buttons only shown when 2+ sources (single source split is meaningless)
 
 ### Ground Truth Dataset
 
@@ -126,6 +130,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 06-01-PLAN.md
+Stopped at: Completed 06-02-PLAN.md
 Resume file: N/A
-Next action: Execute 06-02-PLAN.md (frontend review UI)
+Next action: Execute Phase 7 (Accuracy Refinement)
