@@ -57,7 +57,7 @@ Regenerate: `uv run python scripts/generate_ground_truth.py`
 
 ### Pending Todos
 
-None.
+- **[high]** Prevent false merging of different movies at same cinema (`.planning/todos/cinema-movies-false-merge-same-venue.md`)
 
 ### Blockers/Concerns
 
