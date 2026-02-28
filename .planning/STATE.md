@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Milestone: v0.2
-Status: In progress — Phase 12 Plan 01 complete
-Last activity: 2026-02-28 — Phase 12 Plan 01 executed (2 tasks, 2 commits)
+Status: Complete — Phase 12 Plan 02 complete (all v0.2 phases done)
+Last activity: 2026-02-28 — Phase 12 Plan 02 executed (2 tasks, 2 commits)
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100%
 
 ## Phase Overview
 
@@ -23,7 +23,7 @@ Progress: [█████████░] 90%
 | 9 | AI Matching Verification & Indicators | AIM-01..04 | Complete |
 | 10 | Time Gap Penalty & Venue Matching | TGP-01..02 | Complete |
 | 11 | Frontend UX Improvements | UIX-01..04 | Complete |
-| 12 | Export Function | EXP-01..04 | In Progress (Plan 01 done) |
+| 12 | Export Function | EXP-01..05 | Complete |
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [█████████░] 90%
 | 11 | 01 | ~2m | 2 | 2 |
 | 11 | 02 | ~3m | 2 | 8 |
 | 12 | 01 | ~3m 31s | 2 | 6 |
+| 12 | 02 | ~2m 45s | 2 | 7 |
 
 ## Accumulated Context
 
@@ -85,10 +86,13 @@ None.
 - Export-specific metadata (exportedAt, eventCount, part, totalParts, filters) rather than mirroring input metadata
 - POST for export endpoint (body parameters, matches roadmap)
 - Assume UTC for naive datetime inputs in export filters
+- Separate run_export from main() for CLI testability via monkeypatch
+- Native datetime-local inputs for frontend export (no extra library)
+- Blob download via URL.createObjectURL for frontend file save
 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 12-01-PLAN.md
+Stopped at: Completed 12-02-PLAN.md
 Resume file: N/A
-Next action: Execute Phase 12 Plan 02 (CLI export command)
+Next action: Milestone v0.2 complete -- all phases (8-12) executed
