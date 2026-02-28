@@ -15,7 +15,7 @@
 **Plans:** 2 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Backend: DB model, migration, encryption, API endpoints, worker config loading, tests
+- [x] 08-01-PLAN.md — Backend: DB model, migration, encryption, API endpoints, worker config loading, tests
 - [ ] 08-02-PLAN.md — Frontend: config page with grouped sections, API key management, AI toggle
 
 **Scope:**

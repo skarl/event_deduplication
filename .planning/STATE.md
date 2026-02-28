@@ -5,34 +5,40 @@
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Milestone v0.1 archived. No active milestone.
+**Current focus:** Milestone v0.2 — Configuration, AI Verification, UX & Export
 
 ## Current Position
 
-Milestone: v0.1 -- ARCHIVED
-Status: All 7 phases complete, 39/39 requirements delivered, milestone audit passed.
-Last activity: 2026-02-28 -- Milestone v0.1 archived
+Milestone: v0.2
+Status: In progress — Phase 8 Plan 1 complete
+Last activity: 2026-02-28 — Phase 8 Plan 1 (config backend) completed
 
-Progress: [██████████] 100%
+Progress: [█░░░░░░░░░] 10%
+Current Phase: 8
+Current Plan: 2
+
+## Phase Overview
+
+| Phase | Title | Requirements | Status |
+|-------|-------|-------------|--------|
+| 8 | Dynamic Configuration System | CFG-01..05 | In Progress (1/2 plans) |
+| 9 | AI Matching Verification & Indicators | AIM-01..04 | Pending |
+| 10 | Time Gap Penalty | TGP-01..02 | Pending |
+| 11 | Frontend UX Improvements | UIX-01..04 | Pending |
+| 12 | Export Function | EXP-01..04 | Pending |
 
 ## Performance Metrics
 
-**Velocity:**
+**Velocity (v0.1):**
 - Total plans completed: 18
 - Average duration: 4.1m
 - Total execution time: ~1.25 hours
 
-**By Phase:**
+**v0.2:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 1 | 4/4 | 20m | 5m |
-| 2 | 4/4 | 17m | 4.3m |
-| 3 | 2/2 | 7m | 3.5m |
-| 4 | 2/2 | 13m | 6.5m |
-| 5 | 2/2 | 7m | 3.5m |
-| 6 | 2/2 | 10m | 5m |
-| 7 | 2/2 | 9m | 4.5m |
+| Phase | Plan | Duration | Tasks | Files |
+|-------|------|----------|-------|-------|
+| 08 | 01 | 5m 24s | 2 | 16 |
 
 ## Accumulated Context
 
@@ -50,9 +56,16 @@ None.
 
 None.
 
+## Decisions
+
+- Singleton row (id=1) for config_settings -- simple, no multi-tenant complexity
+- Fernet encryption with plain-text fallback for dev convenience
+- Per-run config loading from DB with YAML fallback for backward compat
+- Deep merge for partial PATCH updates to preserve unset fields
+
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Milestone v0.1 archived
+Stopped at: Completed 08-01-PLAN.md
 Resume file: N/A
-Next action: `/gsd:new-milestone` to start next milestone
+Next action: Execute 08-02-PLAN.md (frontend config UI)
