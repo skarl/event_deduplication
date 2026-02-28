@@ -84,6 +84,23 @@ class CanonicalConfig(BaseModel):
     field_strategies: FieldStrategies = FieldStrategies()
 
 
+class AIMatchingConfig(BaseModel):
+    """Configuration for AI-assisted matching tier."""
+
+    enabled: bool = False
+    api_key: str = ""
+    model: str = "gemini-2.5-flash"
+    temperature: float = 0.1
+    max_output_tokens: int = 300
+    max_concurrent_requests: int = 5
+    confidence_threshold: float = 0.6
+    cache_enabled: bool = True
+
+    # Cost monitoring (Gemini 2.5 Flash pricing)
+    cost_per_1m_input_tokens: float = 0.30
+    cost_per_1m_output_tokens: float = 2.50
+
+
 class MatchingConfig(BaseModel):
     """Top-level matching configuration combining all sub-configs."""
 
@@ -94,6 +111,7 @@ class MatchingConfig(BaseModel):
     title: TitleConfig = TitleConfig()
     cluster: ClusterConfig = ClusterConfig()
     canonical: CanonicalConfig = CanonicalConfig()
+    ai: AIMatchingConfig = AIMatchingConfig()
 
 
 def load_matching_config(path: Path) -> MatchingConfig:
