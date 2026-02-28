@@ -4,7 +4,6 @@ import pytest
 
 from event_dedup.matching.candidate_pairs import (
     CandidatePairStats,
-    _count_cross_source_pairs,
     generate_candidate_pairs,
 )
 
@@ -27,25 +26,26 @@ class TestGenerateCandidatePairs:
         assert pairs == [("a1", "b1")]
         assert stats.blocked_pairs == 1
 
-    def test_two_events_same_source_no_pairs(self) -> None:
-        """Two events from the SAME source sharing a key -> 0 pairs."""
+    def test_two_events_same_source_one_pair(self) -> None:
+        """Two events from the SAME source sharing a key -> 1 pair."""
         events = [
             _evt("a1", "src_a", ["2026-03-01:freiburg"]),
             _evt("a2", "src_a", ["2026-03-01:freiburg"]),
         ]
         pairs, stats = generate_candidate_pairs(events)
-        assert pairs == []
-        assert stats.blocked_pairs == 0
+        assert pairs == [("a1", "a2")]
+        assert stats.blocked_pairs == 1
 
     def test_three_events_two_sources(self) -> None:
-        """3 events in same block: 2 from src_a, 1 from src_b -> 2 cross-source pairs."""
+        """3 events in same block -> 3 pairs (all combinations)."""
         events = [
             _evt("a1", "src_a", ["2026-03-01:freiburg"]),
             _evt("a2", "src_a", ["2026-03-01:freiburg"]),
             _evt("b1", "src_b", ["2026-03-01:freiburg"]),
         ]
         pairs, stats = generate_candidate_pairs(events)
-        assert len(pairs) == 2
+        assert len(pairs) == 3
+        assert ("a1", "a2") in pairs
         assert ("a1", "b1") in pairs
         assert ("a2", "b1") in pairs
 
@@ -98,9 +98,6 @@ class TestGenerateCandidatePairs:
 
     def test_reduction_stats(self) -> None:
         """Blocking should reduce pairs vs naive all-pairs comparison."""
-        # 3 sources: src_a(3 events), src_b(3 events), src_c(4 events)
-        # Total cross-source: 3*3 + 3*4 + 3*4 = 9 + 12 + 12 = 33
-        # Only some share blocking keys -> blocked < 33
         events = [
             _evt("a1", "src_a", ["key1"]),
             _evt("a2", "src_a", ["key2"]),
@@ -115,7 +112,7 @@ class TestGenerateCandidatePairs:
         ]
         pairs, stats = generate_candidate_pairs(events)
         assert stats.total_events == 10
-        assert stats.total_possible_pairs == 33  # 3*3 + 3*4 + 3*4
+        assert stats.total_possible_pairs == 45  # 10 * 9 / 2
         assert stats.blocked_pairs < stats.total_possible_pairs
         assert stats.reduction_pct > 50.0
 
@@ -150,38 +147,3 @@ class TestGenerateCandidatePairs:
         ]
         pairs, _ = generate_candidate_pairs(events)
         assert pairs == sorted(pairs)
-
-
-class TestCountCrossSourcePairs:
-    """Tests for the _count_cross_source_pairs helper."""
-
-    def test_two_sources(self) -> None:
-        events = [
-            _evt("a1", "src_a", []),
-            _evt("a2", "src_a", []),
-            _evt("b1", "src_b", []),
-        ]
-        assert _count_cross_source_pairs(events) == 2  # 2 * 1
-
-    def test_three_sources(self) -> None:
-        events = [
-            _evt("a1", "src_a", []),
-            _evt("a2", "src_a", []),
-            _evt("b1", "src_b", []),
-            _evt("b2", "src_b", []),
-            _evt("c1", "src_c", []),
-        ]
-        # 2*2 + 2*1 + 2*1 = 4 + 2 + 2 = 8
-        assert _count_cross_source_pairs(events) == 8
-
-    def test_single_source(self) -> None:
-        events = [_evt("a1", "src_a", []), _evt("a2", "src_a", [])]
-        assert _count_cross_source_pairs(events) == 0
-
-    def test_empty(self) -> None:
-        assert _count_cross_source_pairs([]) == 0
-
-    def test_one_event_per_source(self) -> None:
-        """n sources with 1 event each -> n*(n-1)/2 pairs."""
-        events = [_evt(f"e{i}", f"src_{i}", []) for i in range(5)]
-        assert _count_cross_source_pairs(events) == 10  # 5*4/2
