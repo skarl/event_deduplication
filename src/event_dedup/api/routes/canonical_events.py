@@ -30,12 +30,14 @@ router = APIRouter(prefix="/api/canonical-events", tags=["canonical-events"])
 async def list_canonical_events(
     db: AsyncSession = Depends(get_db),
     q: str | None = None,
-    city: str | None = None,
+    city: list[str] = Query(default=[]),
     date_from: dt.date | None = None,
     date_to: dt.date | None = None,
-    category: str | None = None,
+    category: list[str] = Query(default=[]),
+    sort_by: str = Query(default="title"),
+    sort_dir: str = Query(default="asc"),
     page: int = Query(default=1, ge=1),
-    size: int = Query(default=20, ge=1, le=100),
+    size: int = Query(default=25, ge=1, le=10000),
 ) -> PaginatedResponse[CanonicalEventSummary]:
     """List canonical events with search, filtering, and pagination."""
     stmt = sa.select(CanonicalEvent)
@@ -43,22 +45,43 @@ async def list_canonical_events(
     if q:
         stmt = stmt.where(CanonicalEvent.title.ilike(f"%{q}%"))
     if city:
-        stmt = stmt.where(CanonicalEvent.location_city.ilike(f"%{city}%"))
+        # OR semantics: event must match ANY selected city (ilike for case-insensitive)
+        stmt = stmt.where(
+            sa.or_(*[CanonicalEvent.location_city.ilike(f"%{c}%") for c in city])
+        )
     if date_from:
         stmt = stmt.where(CanonicalEvent.first_date >= date_from)
     if date_to:
         stmt = stmt.where(CanonicalEvent.last_date <= date_to)
     if category:
-        stmt = stmt.where(
-            sa.cast(CanonicalEvent.categories, sa.String).ilike(f"%{category}%")
-        )
+        # AND semantics: event must have ALL selected categories
+        for cat in category:
+            stmt = stmt.where(
+                sa.cast(CanonicalEvent.categories, sa.String).ilike(f"%{cat}%")
+            )
 
-    # Count total
+    # Sorting
+    sort_col_map = {
+        "title": CanonicalEvent.title,
+        "city": CanonicalEvent.location_city,
+        "date": CanonicalEvent.first_date,
+        "categories": sa.cast(CanonicalEvent.categories, sa.String),
+        "source_count": CanonicalEvent.source_count,
+        "confidence": CanonicalEvent.match_confidence,
+        "review": CanonicalEvent.needs_review,
+    }
+    sort_col = sort_col_map.get(sort_by, CanonicalEvent.title)
+    if sort_dir == "desc":
+        stmt = stmt.order_by(sa.nullslast(sort_col.desc()))
+    else:
+        stmt = stmt.order_by(sa.nullsfirst(sort_col.asc()))
+
+    # Count total (after filters + order)
     count_stmt = sa.select(sa.func.count()).select_from(stmt.subquery())
     total = (await db.execute(count_stmt)).scalar_one()
 
     # Paginate
-    stmt = stmt.order_by(CanonicalEvent.title).offset((page - 1) * size).limit(size)
+    stmt = stmt.offset((page - 1) * size).limit(size)
     result = await db.execute(stmt)
     events = result.scalars().all()
 
@@ -68,6 +91,37 @@ async def list_canonical_events(
     return PaginatedResponse(
         items=items, total=total, page=page, size=size, pages=pages
     )
+
+
+@router.get("/categories", response_model=list[str])
+async def list_distinct_categories(
+    db: AsyncSession = Depends(get_db),
+) -> list[str]:
+    """Return all distinct category values across all canonical events."""
+    stmt = sa.select(CanonicalEvent.categories).where(
+        CanonicalEvent.categories.is_not(None)
+    )
+    result = await db.execute(stmt)
+    all_cats: set[str] = set()
+    for (cats,) in result:
+        if isinstance(cats, list):
+            all_cats.update(cats)
+    return sorted(all_cats)
+
+
+@router.get("/cities", response_model=list[str])
+async def list_distinct_cities(
+    db: AsyncSession = Depends(get_db),
+) -> list[str]:
+    """Return all distinct city values across all canonical events."""
+    stmt = (
+        sa.select(CanonicalEvent.location_city)
+        .where(CanonicalEvent.location_city.is_not(None))
+        .distinct()
+        .order_by(CanonicalEvent.location_city)
+    )
+    result = await db.execute(stmt)
+    return [row[0] for row in result]
 
 
 @router.get("/{event_id}", response_model=CanonicalEventDetail)
