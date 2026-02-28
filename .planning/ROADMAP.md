@@ -98,11 +98,11 @@ Plans:
   2. AI match results are cached so identical event pairs are never re-evaluated
   3. AI usage costs are tracked and reported per batch and per time period
   4. F1 score on the ground truth dataset improves after enabling AI-assisted matching compared to Tier 1 deterministic matching alone
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md -- AI matching infrastructure: google-genai SDK, Pydantic schemas, prompt engineering, Gemini client, content-hash cache, cost tracker, AIMatchingConfig, DB models + Alembic migration
+- [ ] 05-02-PLAN.md -- Pipeline integration: resolver orchestrator, worker orchestrator AI step, evaluation harness comparison (deterministic vs AI F1), Docker env config
 
 ### Phase 6: Manual Review & Operations
 **Goal**: Operators can correct grouping mistakes and monitor system health through the review UI
