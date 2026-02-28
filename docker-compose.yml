@@ -50,11 +50,13 @@ services:
         condition: service_healthy
 
   frontend:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
     ports:
       - "3000:80"
-    volumes:
-      - ./docker/nginx-placeholder.html:/usr/share/nginx/html/index.html:ro
+    depends_on:
+      - api
 
 volumes:
   pgdata:
