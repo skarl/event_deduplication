@@ -114,7 +114,7 @@ async def patch_config(
         decrypted_key = decrypt_value(encrypted_api_key)
         new_config.ai.api_key = decrypted_key
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     if row is None:
         row = ConfigSettings(
