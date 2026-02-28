@@ -244,6 +244,21 @@ function DateTimeSection({
           onChange={(v) => setDateConfig((p) => ({ ...p, far_factor: v }))}
           max="1.0"
         />
+        <NumberField
+          label="Gap penalty threshold (hours)"
+          value={dateConfig.time_gap_penalty_hours}
+          onChange={(v) => setDateConfig((p) => ({ ...p, time_gap_penalty_hours: v }))}
+          step="0.5"
+          min="0.5"
+          note="Time gaps beyond this trigger the penalty factor"
+        />
+        <NumberField
+          label="Gap penalty factor"
+          value={dateConfig.time_gap_penalty_factor}
+          onChange={(v) => setDateConfig((p) => ({ ...p, time_gap_penalty_factor: v }))}
+          max="1.0"
+          note="Score multiplier for time gaps beyond threshold"
+        />
       </div>
     </Section>
   );
@@ -288,6 +303,21 @@ function GeoSection({
           value={geo.neutral_score}
           onChange={(v) => setGeo((p) => ({ ...p, neutral_score: v }))}
           max="1.0"
+        />
+        <NumberField
+          label="Venue match distance (km)"
+          value={geo.venue_match_distance_km}
+          onChange={(v) => setGeo((p) => ({ ...p, venue_match_distance_km: v }))}
+          step="0.5"
+          min="0.1"
+          note="Compare venue names when events are closer than this"
+        />
+        <NumberField
+          label="Venue mismatch factor"
+          value={geo.venue_mismatch_factor}
+          onChange={(v) => setGeo((p) => ({ ...p, venue_mismatch_factor: v }))}
+          max="1.0"
+          note="Score multiplier when venue names clearly differ"
         />
       </div>
     </Section>

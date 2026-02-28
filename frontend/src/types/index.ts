@@ -193,6 +193,8 @@ export interface GeoConfig {
   max_distance_km: number;
   min_confidence: number;
   neutral_score: number;
+  venue_match_distance_km: number;
+  venue_mismatch_factor: number;
 }
 
 export interface DateConfig {
@@ -200,6 +202,8 @@ export interface DateConfig {
   time_close_minutes: number;
   close_factor: number;
   far_factor: number;
+  time_gap_penalty_hours: number;
+  time_gap_penalty_factor: number;
 }
 
 export interface TitleConfig {
