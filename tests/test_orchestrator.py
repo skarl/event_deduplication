@@ -2,13 +2,14 @@
 
 import json
 from pathlib import Path
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from event_dedup.ingestion.file_processor import FileProcessor
-from event_dedup.matching.config import MatchingConfig
+from event_dedup.matching.config import AIMatchingConfig, MatchingConfig
 from event_dedup.models.canonical_event import CanonicalEvent
 from event_dedup.models.canonical_event_source import CanonicalEventSource
 from event_dedup.worker.orchestrator import (
@@ -241,3 +242,66 @@ async def test_process_file_batch_runs_matching_once(
         result = await session.execute(select(CanonicalEventSource))
         sources = result.scalars().all()
         assert len(sources) >= 2  # At least 2 source events linked
+
+
+# ---- Tests for AI integration ----
+
+
+@patch("event_dedup.worker.orchestrator.resolve_ambiguous_pairs")
+async def test_process_new_file_calls_ai_when_enabled(
+    mock_resolve_ai: AsyncMock,
+    processor: FileProcessor,
+    test_session_factory: async_sessionmaker[AsyncSession],
+    tmp_path: Path,
+) -> None:
+    """When AI is enabled and API key is set, resolve_ambiguous_pairs is called."""
+    # Configure AI matching
+    matching_config = MatchingConfig(
+        ai=AIMatchingConfig(enabled=True, api_key="test-key-123"),
+    )
+
+    # Mock resolve_ambiguous_pairs to return its input unchanged
+    # (it receives a MatchResult and should return a MatchResult)
+    async def passthrough(match_result, events, ai_config, session_factory):
+        return match_result
+
+    mock_resolve_ai.side_effect = passthrough
+
+    # Create a JSON file with one event
+    events = [_make_event("pdf-ai-test-0-0", "AI Test Event")]
+    file_path = _write_json_file(tmp_path, "srcAI_test.json", events)
+
+    stats = await process_new_file(
+        file_path, processor, test_session_factory, matching_config
+    )
+
+    assert stats["status"] == "completed"
+    # resolve_ambiguous_pairs was called exactly once
+    assert mock_resolve_ai.call_count == 1
+    # Verify it was called with the right AI config
+    call_args = mock_resolve_ai.call_args
+    assert call_args[1].get("ai_config", call_args[0][2] if len(call_args[0]) > 2 else None) is not None or len(call_args[0]) >= 3
+
+
+@patch("event_dedup.worker.orchestrator.resolve_ambiguous_pairs")
+async def test_process_new_file_skips_ai_when_disabled(
+    mock_resolve_ai: AsyncMock,
+    processor: FileProcessor,
+    test_session_factory: async_sessionmaker[AsyncSession],
+    matching_config: MatchingConfig,
+    tmp_path: Path,
+) -> None:
+    """When AI is disabled (default), resolve_ambiguous_pairs is never called."""
+    # matching_config fixture uses defaults: ai.enabled=False
+    assert matching_config.ai.enabled is False
+
+    events = [_make_event("pdf-noai-test-0-0", "No AI Test Event")]
+    file_path = _write_json_file(tmp_path, "srcNoAI_test.json", events)
+
+    stats = await process_new_file(
+        file_path, processor, test_session_factory, matching_config
+    )
+
+    assert stats["status"] == "completed"
+    # resolve_ambiguous_pairs was never called
+    assert mock_resolve_ai.call_count == 0

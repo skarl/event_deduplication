@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 
 from rapidfuzz.fuzz import token_sort_ratio
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import selectinload
 
 from event_dedup.evaluation.metrics import MetricsResult, compute_metrics, format_metrics
@@ -339,3 +339,130 @@ async def run_multisignal_evaluation(
         false_positive_pairs=false_positives,
         false_negative_pairs=false_negatives,
     )
+
+
+async def run_ai_comparison_evaluation(
+    session: AsyncSession,
+    matching_config: MatchingConfig,
+    session_factory: async_sessionmaker | None = None,
+) -> dict:
+    """Run evaluation comparing deterministic-only vs AI-assisted matching.
+
+    Produces a side-by-side comparison showing how AI matching improves
+    (or changes) the F1 score on the ground truth dataset.
+
+    Args:
+        session: Async SQLAlchemy session for loading events/ground truth.
+        matching_config: Full matching config (must have ai section configured).
+        session_factory: Async session factory for AI cache/usage DB access.
+            Required when AI is enabled.
+
+    Returns:
+        Dict with deterministic_metrics, ai_metrics, and improvement delta.
+    """
+    gt_same, gt_diff = await load_ground_truth(session)
+
+    # Load all source events
+    result = await session.execute(
+        select(SourceEvent).options(selectinload(SourceEvent.dates))
+    )
+    source_events = result.scalars().all()
+
+    events = []
+    for evt in source_events:
+        events.append(
+            {
+                "id": evt.id,
+                "title": evt.title,
+                "title_normalized": evt.title_normalized,
+                "short_description": evt.short_description,
+                "short_description_normalized": evt.short_description_normalized,
+                "description": evt.description,
+                "highlights": evt.highlights,
+                "location_name": evt.location_name,
+                "location_city": evt.location_city,
+                "location_district": evt.location_district,
+                "location_street": evt.location_street,
+                "location_zipcode": evt.location_zipcode,
+                "geo_latitude": evt.geo_latitude,
+                "geo_longitude": evt.geo_longitude,
+                "geo_confidence": evt.geo_confidence,
+                "source_code": evt.source_code,
+                "source_type": evt.source_type,
+                "blocking_keys": evt.blocking_keys,
+                "categories": evt.categories,
+                "is_family_event": evt.is_family_event,
+                "is_child_focused": evt.is_child_focused,
+                "admission_free": evt.admission_free,
+                "dates": [
+                    {
+                        "date": str(d.date),
+                        "start_time": str(d.start_time) if d.start_time else None,
+                        "end_time": str(d.end_time) if d.end_time else None,
+                        "end_date": str(d.end_date) if d.end_date else None,
+                    }
+                    for d in evt.dates
+                ],
+            }
+        )
+
+    # --- Deterministic-only ---
+    det_predicted = generate_predictions_multisignal(events, matching_config)
+    det_metrics = compute_metrics(det_predicted, gt_same, gt_diff)
+
+    # --- With AI assistance ---
+    if matching_config.ai.enabled and session_factory is not None:
+        from event_dedup.ai_matching.resolver import resolve_ambiguous_pairs
+        from event_dedup.matching.pipeline import get_match_pairs, score_candidate_pairs
+
+        match_result = score_candidate_pairs(events, matching_config)
+        match_result = await resolve_ambiguous_pairs(
+            match_result, events, matching_config.ai, session_factory,
+        )
+        ai_predicted = get_match_pairs(match_result)
+    else:
+        ai_predicted = det_predicted
+
+    ai_metrics = compute_metrics(ai_predicted, gt_same, gt_diff)
+
+    # Print comparison
+    print("\n" + "=" * 80)
+    print("  Deterministic vs AI-Assisted Matching Comparison")
+    print("=" * 80)
+    print(f"  {'Metric':>15s}  {'Deterministic':>15s}  {'AI-Assisted':>15s}  {'Delta':>10s}")
+    print("-" * 80)
+    for name, det_val, ai_val in [
+        ("Precision", det_metrics.precision, ai_metrics.precision),
+        ("Recall", det_metrics.recall, ai_metrics.recall),
+        ("F1", det_metrics.f1, ai_metrics.f1),
+        ("True Pos", det_metrics.true_positives, ai_metrics.true_positives),
+        ("False Pos", det_metrics.false_positives, ai_metrics.false_positives),
+        ("False Neg", det_metrics.false_negatives, ai_metrics.false_negatives),
+    ]:
+        if isinstance(det_val, int):
+            delta = ai_val - det_val
+            print(f"  {name:>15s}  {det_val:>15d}  {ai_val:>15d}  {delta:>+10d}")
+        else:
+            delta = ai_val - det_val
+            print(f"  {name:>15s}  {det_val:>15.4f}  {ai_val:>15.4f}  {delta:>+10.4f}")
+    print("=" * 80 + "\n")
+
+    return {
+        "deterministic": {
+            "precision": det_metrics.precision,
+            "recall": det_metrics.recall,
+            "f1": det_metrics.f1,
+            "true_positives": det_metrics.true_positives,
+            "false_positives": det_metrics.false_positives,
+            "false_negatives": det_metrics.false_negatives,
+        },
+        "ai_assisted": {
+            "precision": ai_metrics.precision,
+            "recall": ai_metrics.recall,
+            "f1": ai_metrics.f1,
+            "true_positives": ai_metrics.true_positives,
+            "false_positives": ai_metrics.false_positives,
+            "false_negatives": ai_metrics.false_negatives,
+        },
+        "f1_improvement": ai_metrics.f1 - det_metrics.f1,
+    }
