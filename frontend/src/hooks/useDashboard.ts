@@ -8,9 +8,9 @@ export function useDashboardStats(days: number = 30) {
   });
 }
 
-export function useProcessingHistory(days: number = 30, granularity: string = 'day') {
+export function useProcessingHistory(days: number = 30) {
   return useQuery({
-    queryKey: ['processing-history', days, granularity],
-    queryFn: () => fetchProcessingHistory(days, granularity),
+    queryKey: ['processing-history', days],
+    queryFn: () => fetchProcessingHistory(days),
   });
 }

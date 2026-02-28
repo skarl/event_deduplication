@@ -111,9 +111,8 @@ export async function fetchDashboardStats(days: number = 30): Promise<DashboardS
 
 export async function fetchProcessingHistory(
   days: number = 30,
-  granularity: string = 'day',
 ): Promise<ProcessingHistoryEntry[]> {
-  const res = await fetch(`${API_BASE}/dashboard/processing-history?days=${days}&granularity=${granularity}`);
+  const res = await fetch(`${API_BASE}/dashboard/processing-history?days=${days}`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 }

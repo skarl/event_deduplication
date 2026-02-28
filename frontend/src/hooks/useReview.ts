@@ -21,6 +21,8 @@ export function useSplitEvent() {
       queryClient.invalidateQueries({ queryKey: ['canonical-event'] });
       queryClient.invalidateQueries({ queryKey: ['review-queue'] });
       queryClient.invalidateQueries({ queryKey: ['audit-log'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['processing-history'] });
     },
   });
 }
@@ -34,6 +36,8 @@ export function useMergeEvents() {
       queryClient.invalidateQueries({ queryKey: ['canonical-event'] });
       queryClient.invalidateQueries({ queryKey: ['review-queue'] });
       queryClient.invalidateQueries({ queryKey: ['audit-log'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['processing-history'] });
     },
   });
 }
@@ -47,6 +51,7 @@ export function useDismissEvent() {
       queryClient.invalidateQueries({ queryKey: ['review-queue'] });
       queryClient.invalidateQueries({ queryKey: ['canonical-event'] });
       queryClient.invalidateQueries({ queryKey: ['audit-log'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
     },
   });
 }
