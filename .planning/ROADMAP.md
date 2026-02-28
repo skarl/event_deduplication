@@ -83,11 +83,11 @@ Plans:
   2. User can view a canonical event's full details including title, description, highlights, dates, location, categories, and flags
   3. User can drill down from a canonical event to see all contributing source events in a side-by-side comparison
   4. Match confidence indicators show per-source signal scores (title similarity percentage, geo distance, date match quality) for each source event in a group
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md -- FastAPI REST API: Pydantic schemas, route structure, pg_trgm search, date range filtering, API tests
+- [ ] 04-02-PLAN.md -- React frontend: Vite + TypeScript + TanStack Query, event list/detail/source comparison components, Docker + Nginx
 
 ### Phase 5: AI-Assisted Matching
 **Goal**: Ambiguous event pairs that deterministic matching cannot confidently resolve are sent to Gemini Flash for AI-assisted resolution, improving accuracy on the hardest cases
@@ -143,7 +143,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 1. Foundation & Ground Truth | 4/4 | Complete | 2026-02-27 |
 | 2. Core Matching Pipeline | 4/4 | Complete | 2026-02-28 |
 | 3. Pipeline Integration & Deployment | 2/2 | Complete | 2026-02-28 |
-| 4. API & Browse Frontend | 0/2 | Not started | - |
+| 4. API & Browse Frontend | 0/2 | Planned | - |
 | 5. AI-Assisted Matching | 0/2 | Not started | - |
 | 6. Manual Review & Operations | 0/2 | Not started | - |
 | 7. Accuracy Refinement | 0/1 | Not started | - |

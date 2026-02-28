@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 3: Pipeline Integration & Deployment -- COMPLETE
+**Current focus:** Phase 4: API & Browse Frontend -- PLANNED
 
 ## Current Position
 
-Phase: 3 of 7 (Pipeline Integration & Deployment) -- COMPLETE
-Plan: 2 of 2 in current phase (03-01 complete, 03-02 complete)
-Status: Phase 3 complete. Ready for Phase 4 (API & Frontend).
-Last activity: 2026-02-28 -- Completed 03-02 Docker infrastructure
+Phase: 4 of 7 (API & Browse Frontend) -- PLANNED
+Plan: 0 of 2 in current phase (04-01 planned, 04-02 planned)
+Status: Phase 4 planned. Ready for execution.
+Last activity: 2026-02-28 -- Phase 4 planning complete (2 plans, verification passed)
 
 Progress: [█████░░░░░] 45%
 
@@ -104,6 +104,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 03-02-PLAN.md (Docker infrastructure: Dockerfiles, docker-compose, entrypoint, FastAPI skeleton)
-Resume file: Phase 4 planning needed
-Next action: Plan Phase 4 (API & Frontend)
+Stopped at: Phase 4 planning complete (2 plans, verification passed)
+Resume file: N/A
+Next action: Execute Phase 4 (/gsd:execute-phase 4)
