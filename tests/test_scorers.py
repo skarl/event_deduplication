@@ -62,31 +62,31 @@ class TestDateScore:
         cfg = DateConfig(time_tolerance_minutes=30, time_close_minutes=90, far_factor=0.3)
         a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
         b = {"dates": [{"date": "2026-03-01", "start_time": "14:00"}]}
-        # 240 min apart -> beyond 2h threshold -> time_gap_penalty_factor=0.15
+        # 240 min apart -> beyond 2h threshold -> time_gap_penalty_factor
         score = date_score(a, b, config=cfg)
-        assert score == pytest.approx(0.15)
+        assert score == pytest.approx(cfg.time_gap_penalty_factor)
 
     def test_time_gap_boundary_below(self) -> None:
         """119 min apart -> still within 2h threshold -> far_factor."""
         cfg = DateConfig()
         a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
         b = {"dates": [{"date": "2026-03-01", "start_time": "11:59"}]}
-        # 119 min apart -> <= 120 min -> far_factor=0.3
+        # 119 min apart -> <= 120 min -> far_factor=0.0
         score = date_score(a, b, config=cfg)
-        assert score == pytest.approx(0.3)
+        assert score == pytest.approx(0.0)
 
     def test_time_gap_boundary_at(self) -> None:
         """121 min apart -> exceeds 2h threshold -> time_gap_penalty_factor."""
         cfg = DateConfig()
         a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
         b = {"dates": [{"date": "2026-03-01", "start_time": "12:01"}]}
-        # 121 min apart -> > 120 min -> time_gap_penalty_factor=0.15
+        # 121 min apart -> > 120 min -> time_gap_penalty_factor=0.0
         score = date_score(a, b, config=cfg)
-        assert score == pytest.approx(0.15)
+        assert score == pytest.approx(0.0)
 
     def test_time_gap_custom_threshold(self) -> None:
         """3h threshold, 150 min apart -> still within threshold -> far_factor."""
-        cfg = DateConfig(time_gap_penalty_hours=3.0)
+        cfg = DateConfig(time_gap_penalty_hours=3.0, far_factor=0.3)
         a = {"dates": [{"date": "2026-03-01", "start_time": "10:00"}]}
         b = {"dates": [{"date": "2026-03-01", "start_time": "12:30"}]}
         # 150 min apart -> <= 180 min -> far_factor=0.3

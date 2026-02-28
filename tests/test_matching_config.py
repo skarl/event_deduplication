@@ -81,10 +81,10 @@ class TestDefaultValues:
         cfg = MatchingConfig()
         assert cfg.date.time_tolerance_minutes == 30
         assert cfg.date.time_close_minutes == 90
-        assert cfg.date.close_factor == 0.7
-        assert cfg.date.far_factor == 0.3
+        assert cfg.date.close_factor == 0.1
+        assert cfg.date.far_factor == 0.0
         assert cfg.date.time_gap_penalty_hours == 2.0
-        assert cfg.date.time_gap_penalty_factor == 0.15
+        assert cfg.date.time_gap_penalty_factor == 0.0
 
     def test_default_title(self) -> None:
         cfg = MatchingConfig()
@@ -146,7 +146,7 @@ class TestValidation:
     def test_date_config_construction(self) -> None:
         d = DateConfig(time_tolerance_minutes=15, time_close_minutes=60)
         assert d.time_tolerance_minutes == 15
-        assert d.close_factor == 0.7  # default
+        assert d.close_factor == 0.1  # default
 
     def test_title_config_construction(self) -> None:
         t = TitleConfig(primary_weight=0.5, secondary_weight=0.5)

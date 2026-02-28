@@ -57,10 +57,10 @@ class DateConfig(BaseModel):
 
     time_tolerance_minutes: int = 30
     time_close_minutes: int = 90
-    close_factor: float = 0.7
-    far_factor: float = 0.3
+    close_factor: float = 0.1
+    far_factor: float = 0.0
     time_gap_penalty_hours: float = 2.0
-    time_gap_penalty_factor: float = 0.15
+    time_gap_penalty_factor: float = 0.0
 
 
 class TitleConfig(BaseModel):

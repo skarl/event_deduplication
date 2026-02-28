@@ -30,10 +30,10 @@ geo:
 date:
   time_tolerance_minutes: 30   # Times within this range are a perfect match
   time_close_minutes: 90       # Times within this range get close_factor
-  close_factor: 0.7            # Multiplier for "close" time matches
-  far_factor: 0.3              # Multiplier for times farther apart
+  close_factor: 0.1            # Multiplier for "close" time matches (31-90min)
+  far_factor: 0.0              # Multiplier for times farther apart (91min-2h)
   time_gap_penalty_hours: 2.0  # Hours threshold for the 4th time tier
-  time_gap_penalty_factor: 0.15  # Multiplier for times beyond gap threshold
+  time_gap_penalty_factor: 0.0   # Multiplier for times beyond gap threshold
 
 # --- Title scoring ---
 title:
