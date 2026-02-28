@@ -41,17 +41,23 @@ Plans:
 - Pipeline sets `ai_assisted=True` when any cluster pair has `tier="ai"`
 - Frontend: AI badge in event list, AI detail in ConfidenceIndicator, tier-based styling
 
-### Phase 10: Time Gap Penalty
-**Goal:** Sequential events at the same location 2h+ apart are no longer falsely matched
+### Phase 10: Time Gap Penalty & Venue Name Matching
+**Goal:** Sequential events at the same location 2h+ apart are no longer falsely matched; events at different venues in the same city are correctly distinguished
 **Requirements:** TGP-01, TGP-02
 **Depends on:** Phase 8 (penalty factor in config)
+**Plans:** 2 plans
+
+Plans:
+- [x] 10-01-PLAN.md — Backend: DateConfig + time gap penalty, GeoConfig + venue name matching, tests
+- [x] 10-02-PLAN.md — Frontend: TypeScript types, DateTimeSection + GeoSection config fields
 
 **Scope:**
-- Reduce `far_factor` default from 0.3 to 0.15 for 2h+ time gaps
+- Add 4th time proximity tier: 2h+ gaps get `time_gap_penalty_factor` (0.15) instead of `far_factor` (0.3)
 - Add configurable `time_gap_penalty_hours` (default 2.0) and `time_gap_penalty_factor` (default 0.15) to DateConfig
-- Date scorer applies penalty factor when time difference exceeds threshold
-- Parameters exposed in dynamic config (Phase 8)
-- Update existing tests, add new test cases for 2h+ scenarios
+- Add venue name fuzzy matching in geo scorer when events are in close proximity (<1km)
+- Add configurable `venue_match_distance_km` (default 1.0) and `venue_mismatch_factor` (default 0.5) to GeoConfig
+- All parameters exposed in dynamic config (Phase 8)
+- Update existing tests, add new test cases for time gap and venue matching scenarios
 
 ### Phase 11: Frontend UX Improvements
 **Goal:** Event browsing is faster and more flexible with filter chips, sorting, and page sizing

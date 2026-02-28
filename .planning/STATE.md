@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Milestone: v0.2
-Status: In progress — Phase 11 complete
-Last activity: 2026-02-28 — Phase 11 executed (2 plans, 2 commits)
+Status: In progress — Phase 12 Plan 01 complete
+Last activity: 2026-02-28 — Phase 12 Plan 01 executed (2 tasks, 2 commits)
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 90%
 
 ## Phase Overview
 
@@ -23,7 +23,7 @@ Progress: [████████░░] 80%
 | 9 | AI Matching Verification & Indicators | AIM-01..04 | Complete |
 | 10 | Time Gap Penalty & Venue Matching | TGP-01..02 | Complete |
 | 11 | Frontend UX Improvements | UIX-01..04 | Complete |
-| 12 | Export Function | EXP-01..04 | Pending |
+| 12 | Export Function | EXP-01..04 | In Progress (Plan 01 done) |
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [████████░░] 80%
 | 10 | 02 | ~1m | 3 | 2 |
 | 11 | 01 | ~2m | 2 | 2 |
 | 11 | 02 | ~3m | 2 | 8 |
+| 12 | 01 | ~3m 31s | 2 | 6 |
 
 ## Accumulated Context
 
@@ -55,7 +56,7 @@ Regenerate: `uv run python scripts/generate_ground_truth.py`
 
 ### Pending Todos
 
-- **[HIGH]** Investigate why near-identical events show only 80% match in review — likely source city mismatch ("elt" vs "elz") penalizing score despite identical venue/date/title (`.planning/todos/investigate-80pct-match-review.md`)
+None.
 
 ### Blockers/Concerns
 
@@ -80,10 +81,14 @@ None.
 - ChipSelector as controlled component, no component library needed
 - size=0 in UI maps to size=10000 for API (ALL sentinel)
 - nullslast for desc sort, nullsfirst for asc sort on nullable columns
+- Omit canonical event ID from export to match input format
+- Export-specific metadata (exportedAt, eventCount, part, totalParts, filters) rather than mirroring input metadata
+- POST for export endpoint (body parameters, matches roadmap)
+- Assume UTC for naive datetime inputs in export filters
 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Phase 11 complete
+Stopped at: Completed 12-01-PLAN.md
 Resume file: N/A
-Next action: `/gsd:plan-phase 12` to plan Export Function
+Next action: Execute Phase 12 Plan 02 (CLI export command)

@@ -39,9 +39,9 @@ v0.2 adds a dynamic configuration system (frontend-editable, immediate effect), 
 
 ## EXP — Export Function
 
-- [ ] **EXP-01**: API endpoint to export canonical events as JSON in the same structure as the input format (`{"events": [...], "metadata": {...}}`). Each event object mirrors the input event schema (title, description, dates, location with geo, categories, flags).
-- [ ] **EXP-02**: Export date filter — optional `created_after` and/or `modified_after` datetime parameters. If both empty, export the full database. If set (e.g., "2026-02-28 16:00"), only events created/modified at or after that timestamp are included.
-- [ ] **EXP-03**: Export output split into files of max 200 events each, with clear naming: `export_{timestamp}_{part_N}.json` (e.g., `export_2026-02-28T16-00_part_1.json`).
+- [x] **EXP-01**: API endpoint to export canonical events as JSON in the same structure as the input format (`{"events": [...], "metadata": {...}}`). Each event object mirrors the input event schema (title, description, dates, location with geo, categories, flags).
+- [x] **EXP-02**: Export date filter — optional `created_after` and/or `modified_after` datetime parameters. If both empty, export the full database. If set (e.g., "2026-02-28 16:00"), only events created/modified at or after that timestamp are included.
+- [x] **EXP-03**: Export output split into files of max 200 events each, with clear naming: `export_{timestamp}_{part_N}.json` (e.g., `export_2026-02-28T16-00_part_1.json`).
 - [ ] **EXP-04**: Frontend export UI — page or dialog where operators select the date filter and trigger export. Download as ZIP if multiple files, or single JSON if ≤200 events.
 - [ ] **EXP-05**: CLI export command (`uv run python -m event_dedup.cli export`) with the same date filter options (`--created-after`, `--modified-after`) and file splitting behavior. Writes output files to a specified directory (`--output-dir`, defaults to `./export/`).
 
