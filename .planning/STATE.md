@@ -5,13 +5,13 @@
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Milestone v0.2 — Configuration, AI Verification, UX & Export
+**Current focus:** Between milestones — v0.2 archived, v0.3 not yet started
 
 ## Current Position
 
 Milestone: v0.2
-Status: Complete — Phase 12 Plan 02 complete (all v0.2 phases done)
-Last activity: 2026-02-28 — Phase 12 Plan 02 executed (2 tasks, 2 commits)
+Status: ARCHIVED — 20/20 requirements verified, 445 tests pass, milestone archived
+Last activity: 2026-02-28 — Milestone archived, git tagged v0.2
 
 Progress: [██████████] 100%
 
@@ -94,6 +94,6 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 12-02-PLAN.md
+Stopped at: Milestone v0.2 archived
 Resume file: N/A
-Next action: Milestone v0.2 complete -- all phases (8-12) executed
+Next action: Start v0.3 with `/gsd:new-milestone`

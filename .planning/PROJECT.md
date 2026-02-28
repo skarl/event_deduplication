@@ -8,20 +8,22 @@ A Dockerized service that watches for incoming JSON files of events (extracted f
 
 Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
 
-## Current State (v0.1 shipped)
+## Current State (v0.2 shipped)
 
-All v0.1 requirements delivered. The system is fully operational:
+v0.2 shipped — fully operational deduplication service with dynamic configuration, AI verification, advanced UX, and export capabilities.
 
 - **Pipeline**: File watcher ingests JSON, preprocesses (normalization, synonyms, blocking keys), matches via 4-signal scoring + graph clustering, synthesizes canonical events, persists to PostgreSQL
-- **AI Matching**: Gemini Flash resolves ambiguous pairs with caching and cost tracking
-- **Frontend**: React UI for browsing, searching, source comparison, split/merge review, audit trail, processing dashboard
+- **AI Matching**: Gemini Flash resolves ambiguous pairs with caching, cost tracking, and configurable on/off toggle. AI involvement flagged on canonical events.
+- **Matching Accuracy**: 4-tier time proximity model, venue name fuzzy matching, title veto threshold, German dialect synonyms, category-aware weights, source-type-aware title comparison
+- **Frontend**: React UI with chip selectors for city/category filtering, 7 sortable columns, configurable page sizes, source comparison, split/merge review, audit trail, processing dashboard
+- **Configuration**: All matching parameters editable via frontend config page with immediate effect on next pipeline run. API keys encrypted with Fernet.
+- **Export**: Canonical events exportable as input-format JSON via API, CLI, or frontend. Date filtering, 200-event chunking, ZIP download.
 - **Deployment**: Docker containers (worker, API, frontend, PostgreSQL) via docker-compose
-- **Accuracy**: German dialect synonyms, category-aware weights, source-type-aware title comparison
-- **Tests**: 371 tests passing, 39/39 requirements complete
+- **Tests**: 445 tests passing, 59/59 requirements complete across v0.1 + v0.2
 
 ## Requirements
 
-### Validated (v0.1)
+### Validated (v0.1) — 39 requirements
 
 - [x] Multi-signal deduplication (date + location + title similarity + geo proximity)
 - [x] Tiered matching: fast deterministic matching first, AI-assisted matching for ambiguous cases
@@ -34,7 +36,22 @@ All v0.1 requirements delivered. The system is fully operational:
 - [x] Frontend: drill-down from canonical event to its source events
 - [x] Frontend: manual review UI to correct grouping decisions (split wrong groups, merge missed ones)
 
-### Future (v2 candidates)
+### Validated (v0.2) — 20 requirements
+
+- [x] Dynamic configuration system with frontend editing and immediate effect
+- [x] Gemini API key management (secure storage, write-only frontend field)
+- [x] AI matching on/off toggle in config
+- [x] AI matching end-to-end verification
+- [x] AI involvement indicator on canonical events (persisted + displayed)
+- [x] Time gap penalty for events 2h+ apart (steeper far_factor)
+- [x] Category filter chips with autocomplete and removable tags
+- [x] City filter chips with autocomplete and removable tags
+- [x] Column sorting on all event list columns
+- [x] Configurable rows per page (25, 50, 100, 200, ALL)
+- [x] Canonical event export as input-format JSON with date filtering
+- [x] Export file splitting (200 events per file) with ZIP download
+
+### Future (v0.3 candidates)
 
 - Feedback loop: manual review decisions inform threshold tuning recommendations
 - Duplicate cluster visualization (network graph)
@@ -78,6 +95,8 @@ All v0.1 requirements delivered. The system is fully operational:
 | Frontend included | Need visibility into events and manual review capability | Validated -- React + TanStack Query |
 | Auto-generated ground truth | Manual labeling too slow for automation-focused project | Validated -- 1181 pairs via conservative heuristics |
 | Synonym normalization at ingestion time | O(events) vs O(pairs), stored in title_normalized | Validated -- +0.04 to +0.22 score improvement |
+| DB-backed dynamic config | Parameters need to be tunable without code changes or restarts | Validated -- Fernet-encrypted, per-run loading with YAML fallback |
+| Title veto threshold | Different events at same venue must not auto-merge | Validated -- cinema scenario resolved |
 
 ---
-*Last updated: 2026-02-28 after v0.1 milestone completion*
+*Last updated: 2026-02-28 — v0.2 milestone completed*
