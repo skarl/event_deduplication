@@ -119,12 +119,19 @@ async def dismiss_from_queue(
         raise HTTPException(status_code=404, detail="Canonical event not found")
 
     canonical.needs_review = False
+    # Mark as manually verified so it no longer appears in low-confidence filter
+    old_confidence = canonical.match_confidence
+    if canonical.match_confidence is not None and canonical.match_confidence < 0.8:
+        canonical.match_confidence = 1.0
 
     audit = AuditLog(
         action_type="review_dismiss",
         canonical_event_id=event_id,
         operator=request.operator,
-        details={"reason": request.reason} if request.reason else None,
+        details={
+            "reason": request.reason,
+            "original_confidence": old_confidence,
+        },
     )
     db.add(audit)
     await db.commit()

@@ -78,4 +78,4 @@ def update_canonical_from_dict(canonical: CanonicalEvent, data: dict) -> None:
     canonical.first_date = dt.date.fromisoformat(first) if first else None
     canonical.last_date = dt.date.fromisoformat(last) if last else None
 
-    canonical.updated_at = dt.datetime.now(dt.UTC)
+    canonical.updated_at = dt.datetime.now(dt.UTC).replace(tzinfo=None)
