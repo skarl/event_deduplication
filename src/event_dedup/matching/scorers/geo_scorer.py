@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import math
 
+from rapidfuzz import fuzz
+
 from event_dedup.matching.config import GeoConfig
 
 
@@ -22,6 +24,18 @@ def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
         + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
     )
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
+def _venue_name_factor(
+    name_a: str | None, name_b: str | None, config: GeoConfig
+) -> float:
+    """Compare venue names when events are in close proximity."""
+    if not name_a or not name_b:
+        return 1.0
+    ratio = fuzz.token_sort_ratio(name_a.lower(), name_b.lower()) / 100.0
+    if ratio >= 0.5:
+        return 1.0
+    return config.venue_mismatch_factor
 
 
 def geo_score(
@@ -56,4 +70,15 @@ def geo_score(
         return config.neutral_score
 
     dist = _haversine_km(lat_a, lon_a, lat_b, lon_b)
-    return max(0.0, 1.0 - dist / config.max_distance_km)
+    score = max(0.0, 1.0 - dist / config.max_distance_km)
+
+    # When events are in close proximity, compare venue names
+    if dist < config.venue_match_distance_km:
+        venue_f = _venue_name_factor(
+            event_a.get("location_name"),
+            event_b.get("location_name"),
+            config,
+        )
+        score *= venue_f
+
+    return score

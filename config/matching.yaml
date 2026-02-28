@@ -22,6 +22,8 @@ geo:
   max_distance_km: 10.0    # Events beyond this distance score 0.0
   min_confidence: 0.85     # Geo coordinates below this confidence are ignored
   neutral_score: 0.5       # Score when geo data is missing or low-confidence
+  venue_match_distance_km: 1.0   # Compare venue names within this distance
+  venue_mismatch_factor: 0.5     # Multiplier when venue names don't match
 
 # --- Date/time scoring ---
 date:
@@ -29,6 +31,8 @@ date:
   time_close_minutes: 90       # Times within this range get close_factor
   close_factor: 0.7            # Multiplier for "close" time matches
   far_factor: 0.3              # Multiplier for times farther apart
+  time_gap_penalty_hours: 2.0  # Hours threshold for the 4th time tier
+  time_gap_penalty_factor: 0.15  # Multiplier for times beyond gap threshold
 
 # --- Title scoring ---
 title:

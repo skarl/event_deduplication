@@ -80,7 +80,9 @@ def _time_proximity_factor(
         return 1.0
     if diff_minutes <= config.time_close_minutes:
         return config.close_factor
-    return config.far_factor
+    if diff_minutes <= config.time_gap_penalty_hours * 60:
+        return config.far_factor
+    return config.time_gap_penalty_factor
 
 
 def date_score(

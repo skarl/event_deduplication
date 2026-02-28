@@ -47,6 +47,8 @@ class GeoConfig(BaseModel):
     max_distance_km: float = 10.0
     min_confidence: float = 0.85
     neutral_score: float = 0.5
+    venue_match_distance_km: float = 1.0
+    venue_mismatch_factor: float = 0.5
 
 
 class DateConfig(BaseModel):
@@ -56,6 +58,8 @@ class DateConfig(BaseModel):
     time_close_minutes: int = 90
     close_factor: float = 0.7
     far_factor: float = 0.3
+    time_gap_penalty_hours: float = 2.0
+    time_gap_penalty_factor: float = 0.15
 
 
 class TitleConfig(BaseModel):
