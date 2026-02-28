@@ -18,7 +18,7 @@ from event_dedup.matching.candidate_pairs import (
     generate_candidate_pairs,
 )
 from event_dedup.matching.combiner import SignalScores, combined_score, decide
-from event_dedup.matching.config import MatchingConfig
+from event_dedup.matching.config import MatchingConfig, ScoringWeights
 from event_dedup.matching.scorers import (
     date_score,
     description_score,
@@ -67,6 +67,34 @@ class MatchResult:
     no_match_count: int
 
 
+def resolve_weights(
+    event_a: dict, event_b: dict, config: MatchingConfig
+) -> ScoringWeights:
+    """Select scoring weights based on shared event categories.
+
+    Checks if both events share a category that has weight overrides.
+    Uses the priority list to determine which override takes precedence
+    when multiple categories overlap.
+
+    Returns the default config.scoring if no category-specific override applies.
+    """
+    if not config.category_weights.priority:
+        return config.scoring
+
+    cats_a = set(event_a.get("categories") or [])
+    cats_b = set(event_b.get("categories") or [])
+    shared = cats_a & cats_b
+
+    if not shared:
+        return config.scoring
+
+    for cat in config.category_weights.priority:
+        if cat in shared and cat in config.category_weights.overrides:
+            return config.category_weights.overrides[cat]
+
+    return config.scoring
+
+
 def score_candidate_pairs(
     events: list[dict], config: MatchingConfig
 ) -> MatchResult:
@@ -103,7 +131,8 @@ def score_candidate_pairs(
             description=description_score(evt_a, evt_b),
         )
 
-        score = combined_score(signals, config.scoring)
+        weights = resolve_weights(evt_a, evt_b, config)
+        score = combined_score(signals, weights)
         dec = decide(score, config.thresholds)
 
         decisions.append(

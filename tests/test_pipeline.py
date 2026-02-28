@@ -2,11 +2,12 @@
 
 import pytest
 
-from event_dedup.matching.config import MatchingConfig, ThresholdConfig
+from event_dedup.matching.config import CategoryWeightsConfig, MatchingConfig, ScoringWeights, ThresholdConfig
 from event_dedup.matching.pipeline import (
     MatchDecisionRecord,
     MatchResult,
     get_match_pairs,
+    resolve_weights,
     score_candidate_pairs,
 )
 
@@ -366,3 +367,124 @@ class TestScoreCandidatePairs:
         assert result.match_count == 0
         assert result.ambiguous_count == 0
         assert result.no_match_count == 0
+
+
+class TestResolveWeights:
+    """Tests for category-aware weight resolution."""
+
+    def _config_with_categories(self) -> MatchingConfig:
+        return MatchingConfig(
+            category_weights=CategoryWeightsConfig(
+                priority=["fasnacht", "versammlung"],
+                overrides={
+                    "fasnacht": ScoringWeights(date=0.30, geo=0.30, title=0.25, description=0.15),
+                    "versammlung": ScoringWeights(date=0.25, geo=0.20, title=0.40, description=0.15),
+                }
+            )
+        )
+
+    def test_shared_category_uses_override(self) -> None:
+        """Events sharing a priority category get override weights."""
+        config = self._config_with_categories()
+        evt_a = {"categories": ["fasnacht", "kinder"]}
+        evt_b = {"categories": ["fasnacht"]}
+        weights = resolve_weights(evt_a, evt_b, config)
+        assert weights.title == 0.25
+        assert weights.geo == 0.30
+
+    def test_no_shared_category_uses_default(self) -> None:
+        """Events with no shared category get default weights."""
+        config = self._config_with_categories()
+        evt_a = {"categories": ["musik"]}
+        evt_b = {"categories": ["sport"]}
+        weights = resolve_weights(evt_a, evt_b, config)
+        assert weights == config.scoring
+
+    def test_no_categories_uses_default(self) -> None:
+        """Events without categories field get default weights."""
+        config = self._config_with_categories()
+        evt_a: dict = {}
+        evt_b = {"categories": ["fasnacht"]}
+        weights = resolve_weights(evt_a, evt_b, config)
+        assert weights == config.scoring
+
+    def test_none_categories_uses_default(self) -> None:
+        """Events with None categories get default weights."""
+        config = self._config_with_categories()
+        evt_a = {"categories": None}
+        evt_b = {"categories": ["fasnacht"]}
+        weights = resolve_weights(evt_a, evt_b, config)
+        assert weights == config.scoring
+
+    def test_priority_order_respected(self) -> None:
+        """First matching priority category wins."""
+        config = self._config_with_categories()
+        evt_a = {"categories": ["fasnacht", "versammlung"]}
+        evt_b = {"categories": ["fasnacht", "versammlung"]}
+        weights = resolve_weights(evt_a, evt_b, config)
+        assert weights.title == 0.25  # fasnacht weights (higher priority)
+
+    def test_empty_priority_uses_default(self) -> None:
+        """Empty priority list means no overrides."""
+        config = MatchingConfig()
+        evt_a = {"categories": ["fasnacht"]}
+        evt_b = {"categories": ["fasnacht"]}
+        weights = resolve_weights(evt_a, evt_b, config)
+        assert weights == config.scoring
+
+    def test_shared_category_not_in_overrides_uses_default(self) -> None:
+        """Shared category in priority but not in overrides uses default."""
+        config = MatchingConfig(
+            category_weights=CategoryWeightsConfig(
+                priority=["musik"],
+                overrides={}
+            )
+        )
+        evt_a = {"categories": ["musik"]}
+        evt_b = {"categories": ["musik"]}
+        weights = resolve_weights(evt_a, evt_b, config)
+        assert weights == config.scoring
+
+    def test_category_aware_scoring_integration(self) -> None:
+        """Full pipeline with category-aware weights produces different scores."""
+        events = [
+            make_event(
+                id="a1",
+                title_normalized="fastnachtumzug waldkirch",
+                source_code="src_a",
+                blocking_keys=["2026-03-01:waldkirch"],
+                dates=[{"date": "2026-03-01"}],
+                geo_latitude=48.09,
+                geo_longitude=7.96,
+                geo_confidence=0.95,
+            ),
+            make_event(
+                id="b1",
+                title_normalized="grosser umzug waldkirch",
+                source_code="src_b",
+                blocking_keys=["2026-03-01:waldkirch"],
+                dates=[{"date": "2026-03-01"}],
+                geo_latitude=48.09,
+                geo_longitude=7.96,
+                geo_confidence=0.95,
+            ),
+        ]
+        events[0]["categories"] = ["fasnacht"]
+        events[1]["categories"] = ["fasnacht"]
+
+        config_with_cats = MatchingConfig(
+            category_weights=CategoryWeightsConfig(
+                priority=["fasnacht"],
+                overrides={
+                    "fasnacht": ScoringWeights(date=0.30, geo=0.30, title=0.25, description=0.15),
+                }
+            )
+        )
+        config_without_cats = MatchingConfig()
+
+        result_with = score_candidate_pairs(events, config_with_cats)
+        result_without = score_candidate_pairs(events, config_without_cats)
+
+        assert len(result_with.decisions) == 1
+        assert len(result_without.decisions) == 1
+        assert result_with.decisions[0].combined_score_value != result_without.decisions[0].combined_score_value

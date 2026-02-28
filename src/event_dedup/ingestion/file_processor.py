@@ -21,6 +21,7 @@ from event_dedup.models.source_event import SourceEvent
 from event_dedup.preprocessing.blocking import generate_blocking_keys
 from event_dedup.preprocessing.normalizer import load_city_aliases, normalize_city, normalize_text
 from event_dedup.preprocessing.prefix_stripper import PrefixConfig, load_prefix_config, strip_prefixes
+from event_dedup.preprocessing.synonyms import load_synonym_map
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +155,7 @@ class FileProcessor:
         dead_letter_dir: Path,
         prefix_config_path: Path | None = None,
         city_aliases_path: Path | None = None,
+        synonyms_path: Path | None = None,
     ) -> None:
         self.session_factory = session_factory
         self.dead_letter_dir = dead_letter_dir
@@ -162,9 +164,11 @@ class FileProcessor:
         config_dir = Path(__file__).resolve().parents[1] / "config"
         prefix_path = prefix_config_path or config_dir / "prefixes.yaml"
         aliases_path = city_aliases_path or config_dir / "city_aliases.yaml"
+        syn_path = synonyms_path or config_dir / "synonyms.yaml"
 
         self.prefix_config: PrefixConfig = load_prefix_config(prefix_path)
         self.city_aliases: dict[str, str] = load_city_aliases(aliases_path)
+        self.synonym_map: dict[str, str] = load_synonym_map(syn_path)
 
     async def process_file(self, file_path: Path) -> FileProcessResult:
         """Process a single JSON event file.
@@ -216,9 +220,11 @@ class FileProcessor:
 
                     # Populate normalized fields
                     stripped_title = strip_prefixes(event.title, self.prefix_config)
-                    source_event.title_normalized = normalize_text(stripped_title)
+                    source_event.title_normalized = normalize_text(stripped_title, synonym_map=self.synonym_map)
                     source_event.short_description_normalized = (
-                        normalize_text(event.short_description) if event.short_description else None
+                        normalize_text(event.short_description, synonym_map=self.synonym_map)
+                        if event.short_description
+                        else None
                     )
                     source_event.location_name_normalized = (
                         normalize_text(source_event.location_name) if source_event.location_name else None

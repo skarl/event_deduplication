@@ -10,8 +10,10 @@ from pathlib import Path
 
 import yaml
 
+from event_dedup.preprocessing.synonyms import apply_synonyms
 
-def normalize_text(text: str | None) -> str:
+
+def normalize_text(text: str | None, synonym_map: dict[str, str] | None = None) -> str:
     """Normalize text for matching purposes.
 
     Steps:
@@ -19,11 +21,13 @@ def normalize_text(text: str | None) -> str:
         2. Lowercase the text
         3. Expand German umlauts (both composed and decomposed forms)
         4. Normalize whitespace (collapse to single space, strip)
-        5. Strip punctuation (keep hyphens for German compound words)
-        6. Final strip
+        5. Apply synonym replacement (if synonym_map provided)
+        6. Strip punctuation (keep hyphens for German compound words)
+        7. Final strip
 
     Args:
         text: Input text to normalize.
+        synonym_map: Optional dict mapping dialect variants to canonical forms.
 
     Returns:
         Normalized text string.
@@ -51,6 +55,10 @@ def normalize_text(text: str | None) -> str:
 
     # Normalize whitespace: collapse multiple spaces/tabs/newlines to single space
     result = re.sub(r"\s+", " ", result).strip()
+
+    # Apply synonym replacement (after umlaut expansion so variants match)
+    if synonym_map:
+        result = apply_synonyms(result, synonym_map)
 
     # Strip punctuation but KEEP hyphens (important for German compound words)
     result = re.sub(r"[\"'!?,.:;()\[\]{}]", "", result)

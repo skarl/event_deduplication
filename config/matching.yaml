@@ -36,6 +36,11 @@ title:
   secondary_weight: 0.3   # Weight for token_set_ratio (secondary signal)
   blend_lower: 0.40       # Below this, use only primary score
   blend_upper: 0.80       # Above this, use only primary score
+  cross_source_type:       # Override for artikel-terminliste pairs
+    primary_weight: 0.4    # Less weight on sort (penalizes length diff)
+    secondary_weight: 0.6  # More weight on set (rewards token overlap)
+    blend_lower: 0.25      # Wider blend range to catch more asymmetric matches
+    blend_upper: 0.95
 
 # --- Clustering ---
 cluster:
@@ -57,3 +62,23 @@ canonical:
     is_family_event: any_true
     is_child_focused: any_true
     admission_free: any_true
+
+# --- Category-aware weight overrides ---
+# When both events in a pair share a category listed here,
+# use these weights instead of the default scoring weights.
+# Priority determines which override applies when multiple categories match.
+category_weights:
+  priority:
+    - fasnacht
+    - versammlung
+  overrides:
+    fasnacht:
+      date: 0.30
+      geo: 0.30
+      title: 0.25         # Lower: carnival titles vary wildly between sources
+      description: 0.15
+    versammlung:
+      date: 0.25
+      geo: 0.20
+      title: 0.40         # Higher: political events have very consistent titles
+      description: 0.15

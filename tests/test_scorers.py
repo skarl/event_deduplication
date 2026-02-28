@@ -192,6 +192,70 @@ class TestTitleScore:
         score_blend = title_score(a, b, config=cfg)
         assert 0.0 < score_blend <= 1.0
 
+    def test_cross_source_type_uses_override(self) -> None:
+        """When source types differ (artikel vs terminliste), cross_source_type config is used."""
+        cross_cfg = TitleConfig(
+            primary_weight=0.4, secondary_weight=0.6,
+            blend_lower=0.25, blend_upper=0.95,
+        )
+        cfg = TitleConfig(cross_source_type=cross_cfg)
+        a = {"title": "Preismaskenball", "source_type": "terminliste"}
+        b = {"title": "Preismaskenball mit Hemdglunker und Musikverein", "source_type": "artikel"}
+        score_cross = title_score(a, b, config=cfg)
+        score_default = title_score(a, b, config=TitleConfig())
+        assert score_cross > score_default
+
+    def test_same_source_type_no_override(self) -> None:
+        """When both events have same source type, default config is used."""
+        cross_cfg = TitleConfig(
+            primary_weight=0.1, secondary_weight=0.9,
+            blend_lower=0.0, blend_upper=1.0,
+        )
+        cfg = TitleConfig(cross_source_type=cross_cfg)
+        a = {"title": "Konzert im Park", "source_type": "artikel"}
+        b = {"title": "Park Konzert", "source_type": "artikel"}
+        score_with_cfg = title_score(a, b, config=cfg)
+        score_default = title_score(a, b, config=TitleConfig())
+        assert score_with_cfg == score_default
+
+    def test_missing_source_type_no_override(self) -> None:
+        """When source_type is missing, default config is used."""
+        cross_cfg = TitleConfig(
+            primary_weight=0.1, secondary_weight=0.9,
+            blend_lower=0.0, blend_upper=1.0,
+        )
+        cfg = TitleConfig(cross_source_type=cross_cfg)
+        a = {"title": "Konzert im Park"}
+        b = {"title": "Park Konzert"}
+        score_with_cfg = title_score(a, b, config=cfg)
+        score_default = title_score(a, b, config=TitleConfig())
+        assert score_with_cfg == score_default
+
+    def test_anzeige_source_type_no_override(self) -> None:
+        """Anzeige source type does not trigger cross_source_type override."""
+        cross_cfg = TitleConfig(
+            primary_weight=0.1, secondary_weight=0.9,
+            blend_lower=0.0, blend_upper=1.0,
+        )
+        cfg = TitleConfig(cross_source_type=cross_cfg)
+        a = {"title": "SC Freiburg Spiel", "source_type": "anzeige"}
+        b = {"title": "SC Freiburg Bundesliga Spiel", "source_type": "artikel"}
+        score_with_cfg = title_score(a, b, config=cfg)
+        score_default = title_score(a, b, config=TitleConfig())
+        assert score_with_cfg == score_default
+
+    def test_cross_source_type_wider_blend_catches_low_sort(self) -> None:
+        """Cross-type config with wider blend range catches pairs outside default range."""
+        cross_cfg = TitleConfig(
+            primary_weight=0.4, secondary_weight=0.6,
+            blend_lower=0.25, blend_upper=0.95,
+        )
+        cfg = TitleConfig(cross_source_type=cross_cfg)
+        a = {"title": "Schiebeschlage", "source_type": "terminliste"}
+        b = {"title": "Traditionelles Schiebeschlage mit gluehenden Holzscheiben", "source_type": "artikel"}
+        score = title_score(a, b, config=cfg)
+        assert score > 0.5
+
 
 # ===========================================================================
 # description_score tests

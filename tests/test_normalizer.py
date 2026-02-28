@@ -2,10 +2,20 @@
 
 from pathlib import Path
 
+import pytest
+
 from event_dedup.preprocessing.normalizer import load_city_aliases, normalize_city, normalize_text
+from event_dedup.preprocessing.synonyms import load_synonym_map
 
 # Path to the city_aliases.yaml config
 CITY_ALIASES_PATH = Path(__file__).resolve().parents[1] / "src" / "event_dedup" / "config" / "city_aliases.yaml"
+SYNONYMS_PATH = Path(__file__).resolve().parents[1] / "src" / "event_dedup" / "config" / "synonyms.yaml"
+
+
+@pytest.fixture()
+def synonym_map() -> dict[str, str]:
+    """Load the real synonym map for tests."""
+    return load_synonym_map(SYNONYMS_PATH)
 
 
 def test_normalize_lowercase():
@@ -91,3 +101,34 @@ def test_load_city_aliases():
     assert aliases["nordweil"] == "kenzingen"
     assert "waltershofen" in aliases
     assert aliases["waltershofen"] == "freiburg im breisgau"
+
+
+# ===========================================================================
+# Synonym-aware normalization tests
+# ===========================================================================
+
+
+def test_normalize_with_synonyms_fasnet(synonym_map: dict[str, str]):
+    """normalize_text with synonym_map replaces fasnet with fastnacht."""
+    # "Fasnet-Eröffnung" -> lowercase -> "fasnet-eröffnung" -> umlaut expansion -> "fasnet-eroeffnung"
+    # -> synonym -> "fastnacht-eroeffnung"
+    result = normalize_text("Fasnet-Er\u00f6ffnung", synonym_map=synonym_map)
+    assert "fastnacht" in result
+    assert "fasnet" not in result
+
+
+def test_normalize_with_synonyms_compound(synonym_map: dict[str, str]):
+    """normalize_text with synonym_map handles compound word Fasnetsumzug."""
+    result = normalize_text("Fasnetsumzug", synonym_map=synonym_map)
+    assert "fastnacht" in result
+
+
+def test_normalize_without_synonyms_unchanged():
+    """normalize_text without synonym_map does not replace dialect terms."""
+    result = normalize_text("Fasnet")
+    assert result == "fasnet"
+
+
+def test_normalize_city_unaffected():
+    """normalize_city still works without synonym_map."""
+    assert normalize_city("Waldkirch") == "waldkirch"

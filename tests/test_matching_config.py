@@ -6,6 +6,7 @@ import pytest
 import yaml
 
 from event_dedup.matching.config import (
+    CategoryWeightsConfig,
     DateConfig,
     GeoConfig,
     MatchingConfig,
@@ -146,3 +147,97 @@ class TestValidation:
     def test_title_config_construction(self) -> None:
         t = TitleConfig(primary_weight=0.5, secondary_weight=0.5)
         assert t.primary_weight == 0.5
+
+
+class TestCrossSourceTypeConfig:
+    """Tests for cross_source_type nested TitleConfig."""
+
+    def test_cross_source_type_from_yaml(self, tmp_path: Path) -> None:
+        """cross_source_type nested TitleConfig loads from YAML."""
+        config_path = tmp_path / "matching.yaml"
+        config_path.write_text(yaml.dump({
+            "title": {
+                "primary_weight": 0.7,
+                "secondary_weight": 0.3,
+                "cross_source_type": {
+                    "primary_weight": 0.4,
+                    "secondary_weight": 0.6,
+                    "blend_lower": 0.25,
+                    "blend_upper": 0.95,
+                }
+            }
+        }))
+        cfg = load_matching_config(config_path)
+        assert cfg.title.cross_source_type is not None
+        assert cfg.title.cross_source_type.primary_weight == 0.4
+        assert cfg.title.cross_source_type.blend_lower == 0.25
+
+    def test_cross_source_type_none_by_default(self) -> None:
+        """cross_source_type is None when not specified."""
+        cfg = MatchingConfig()
+        assert cfg.title.cross_source_type is None
+
+    def test_load_real_config_with_cross_source_type(self) -> None:
+        """The shipped config/matching.yaml includes cross_source_type."""
+        cfg = load_matching_config(Path("config/matching.yaml"))
+        assert cfg.title.cross_source_type is not None
+        assert cfg.title.cross_source_type.primary_weight == 0.4
+        assert cfg.title.cross_source_type.secondary_weight == 0.6
+
+
+class TestCategoryWeightsConfig:
+    """Tests for category-aware weight configuration."""
+
+    def test_default_empty(self) -> None:
+        """Default category_weights has empty priority and overrides."""
+        cfg = MatchingConfig()
+        assert cfg.category_weights.priority == []
+        assert cfg.category_weights.overrides == {}
+
+    def test_load_from_yaml(self, tmp_path: Path) -> None:
+        """Category weights load correctly from YAML."""
+        config_path = tmp_path / "matching.yaml"
+        config_path.write_text(yaml.dump({
+            "category_weights": {
+                "priority": ["fasnacht", "versammlung"],
+                "overrides": {
+                    "fasnacht": {
+                        "date": 0.30, "geo": 0.30,
+                        "title": 0.25, "description": 0.15,
+                    },
+                    "versammlung": {
+                        "date": 0.25, "geo": 0.20,
+                        "title": 0.40, "description": 0.15,
+                    }
+                }
+            }
+        }))
+        cfg = load_matching_config(config_path)
+        assert cfg.category_weights.priority == ["fasnacht", "versammlung"]
+        assert cfg.category_weights.overrides["fasnacht"].title == 0.25
+        assert cfg.category_weights.overrides["versammlung"].title == 0.40
+
+    def test_load_real_config_category_weights(self) -> None:
+        """The shipped config/matching.yaml includes category_weights."""
+        cfg = load_matching_config(Path("config/matching.yaml"))
+        assert "fasnacht" in cfg.category_weights.priority
+        assert "fasnacht" in cfg.category_weights.overrides
+        assert cfg.category_weights.overrides["fasnacht"].title == 0.25
+
+    def test_partial_override_preserves_defaults(self, tmp_path: Path) -> None:
+        """Category weights config doesn't affect other defaults."""
+        config_path = tmp_path / "matching.yaml"
+        config_path.write_text(yaml.dump({
+            "category_weights": {
+                "priority": ["fasnacht"],
+                "overrides": {
+                    "fasnacht": {"date": 0.35, "geo": 0.35, "title": 0.20, "description": 0.10}
+                }
+            }
+        }))
+        cfg = load_matching_config(config_path)
+        # Default scoring unchanged
+        assert cfg.scoring.title == 0.30
+        assert cfg.scoring.date == 0.30
+        # Category override applied
+        assert cfg.category_weights.overrides["fasnacht"].title == 0.20

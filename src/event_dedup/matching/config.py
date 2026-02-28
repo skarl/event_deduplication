@@ -52,6 +52,10 @@ class TitleConfig(BaseModel):
     secondary_weight: float = 0.3
     blend_lower: float = 0.40
     blend_upper: float = 0.80
+    cross_source_type: TitleConfig | None = None
+
+
+TitleConfig.model_rebuild()
 
 
 class ClusterConfig(BaseModel):
@@ -101,6 +105,13 @@ class AIMatchingConfig(BaseModel):
     cost_per_1m_output_tokens: float = 2.50
 
 
+class CategoryWeightsConfig(BaseModel):
+    """Category-specific scoring weight overrides with priority ordering."""
+
+    priority: list[str] = []
+    overrides: dict[str, ScoringWeights] = {}
+
+
 class MatchingConfig(BaseModel):
     """Top-level matching configuration combining all sub-configs."""
 
@@ -112,6 +123,7 @@ class MatchingConfig(BaseModel):
     cluster: ClusterConfig = ClusterConfig()
     canonical: CanonicalConfig = CanonicalConfig()
     ai: AIMatchingConfig = AIMatchingConfig()
+    category_weights: CategoryWeightsConfig = CategoryWeightsConfig()
 
 
 def load_matching_config(path: Path) -> MatchingConfig:

@@ -341,6 +341,42 @@ async def run_multisignal_evaluation(
     )
 
 
+def evaluate_category_subset(
+    ground_truth_same: set[tuple[str, str]],
+    ground_truth_different: set[tuple[str, str]],
+    predicted_same: set[tuple[str, str]],
+    events_by_id: dict[str, dict],
+    category: str,
+) -> MetricsResult:
+    """Compute evaluation metrics for a specific event category subset.
+
+    Filters ground truth and predicted pairs to only include those where
+    at least one event in the pair has the specified category. Then
+    computes precision/recall/F1 on the filtered subset.
+
+    Args:
+        ground_truth_same: All ground truth "same" pairs.
+        ground_truth_different: All ground truth "different" pairs.
+        predicted_same: All predicted "same" pairs.
+        events_by_id: Dict mapping event IDs to event dicts (must include "categories" field).
+        category: Category to filter by.
+
+    Returns:
+        MetricsResult for the category subset.
+    """
+    def pair_has_category(pair: tuple[str, str], cat: str) -> bool:
+        a_id, b_id = pair
+        cats_a = set(events_by_id.get(a_id, {}).get("categories") or [])
+        cats_b = set(events_by_id.get(b_id, {}).get("categories") or [])
+        return cat in cats_a or cat in cats_b
+
+    gt_same_cat = {p for p in ground_truth_same if pair_has_category(p, category)}
+    gt_diff_cat = {p for p in ground_truth_different if pair_has_category(p, category)}
+    pred_cat = {p for p in predicted_same if pair_has_category(p, category)}
+
+    return compute_metrics(pred_cat, gt_same_cat, gt_diff_cat)
+
+
 async def run_ai_comparison_evaluation(
     session: AsyncSession,
     matching_config: MatchingConfig,

@@ -86,19 +86,24 @@ def strip_prefixes(title: str, config: PrefixConfig) -> str:
     return title
 
 
-def normalize_title(title: str, prefix_config: PrefixConfig) -> str:
+def normalize_title(
+    title: str,
+    prefix_config: PrefixConfig,
+    synonym_map: dict[str, str] | None = None,
+) -> str:
     """Strip prefixes from a title and then normalize the result.
 
     This is the standard pipeline for title normalization:
     1. Strip prefixes from the ORIGINAL title (case-insensitive)
-    2. Normalize the stripped result (lowercase, umlaut expansion, etc.)
+    2. Normalize the stripped result (lowercase, umlaut expansion, synonyms, etc.)
 
     Args:
         title: Original event title.
         prefix_config: Prefix configuration.
+        synonym_map: Optional synonym map for dialect normalization.
 
     Returns:
         Normalized title with prefix stripped.
     """
     stripped = strip_prefixes(title, prefix_config)
-    return normalize_text(stripped)
+    return normalize_text(stripped, synonym_map=synonym_map)

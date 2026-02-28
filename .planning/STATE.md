@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 6: Manual Review & Operations -- COMPLETE
+**Current focus:** Phase 7: Accuracy Refinement -- COMPLETE
 
 ## Current Position
 
-Phase: 6 of 7 (Manual Review & Operations) -- COMPLETE
-Plan: 2 of 2 in current phase (06-02 complete, phase done)
-Status: Phase 6 complete. Frontend review UI (review queue, split/merge dialogs, audit trail, dashboard) done.
-Last activity: 2026-02-28 -- Plan 06-02 executed (3 tasks, 4m)
+Phase: 7 of 7 (Accuracy Refinement) -- COMPLETE
+Plan: 2 of 2 in current phase (07-02 complete, phase done)
+Status: All 7 phases complete. German dialect synonyms, source-type-aware scoring, category-aware weights, and category-specific evaluation done.
+Last activity: 2026-02-28 -- Phase 7 executed (2 plans)
 
-Progress: [████████░░] 84%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 18
 - Average duration: 4.1m
-- Total execution time: 1.10 hours
+- Total execution time: ~1.25 hours
 
 **By Phase:**
 
@@ -33,9 +33,10 @@ Progress: [████████░░] 84%
 | 4 | 2/2 | 13m | 6.5m |
 | 5 | 2/2 | 7m | 3.5m |
 | 6 | 2/2 | 10m | 5m |
+| 7 | 2/2 | 9m | 4.5m |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (5m), 05-01 (3m), 05-02 (4m), 06-01 (6m), 06-02 (4m)
+- Last 5 plans: 05-02 (4m), 06-01 (6m), 06-02 (4m), 07-01 (5m), 07-02 (4m)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -108,6 +109,13 @@ Recent decisions affecting current work:
 - [06-02]: Debounced search (300ms) with useQuery for canonical event search in split/merge dialogs
 - [06-02]: MergeDialog navigates to surviving event after merge since current event is deleted
 - [06-02]: Split buttons only shown when 2+ sources (single source split is meaningless)
+- [07-01]: All synonym entries use post-normalization forms (lowercase, umlauts expanded)
+- [07-01]: Synonym replacement applied at normalization time O(events), not scoring time O(pairs)
+- [07-01]: cross_source_type only triggers for artikel-terminliste pairs, not anzeige
+- [07-02]: Weight resolution happens in pipeline (upstream), combiner is unchanged
+- [07-02]: Category overrides only apply when both events share the category
+- [07-02]: Priority list determines which override wins when multiple categories overlap
+- [07-02]: Conservative weight adjustments: fasnacht title 0.30->0.25, versammlung title 0.30->0.40
 
 ### Ground Truth Dataset
 
@@ -130,6 +138,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 06-02-PLAN.md
+Stopped at: All phases complete (7/7)
 Resume file: N/A
-Next action: Execute Phase 7 (Accuracy Refinement)
+Next action: Project milestone complete -- all phases delivered

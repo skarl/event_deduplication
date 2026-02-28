@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from event_dedup.evaluation.harness import (
     EvaluationConfig,
+    evaluate_category_subset,
     generate_predictions_from_events,
     load_ground_truth,
 )
@@ -188,3 +189,88 @@ class TestLoadGroundTruthSeparatesLabels:
         assert ("evt-c", "evt-d") in gt_diff
         assert len(gt_same) == 1
         assert len(gt_diff) == 1
+
+
+class TestEvaluateCategorySubset:
+    """Tests for category-specific evaluation."""
+
+    def _make_events_by_id(self) -> dict[str, dict]:
+        return {
+            "e1": {"id": "e1", "categories": ["fasnacht", "kinder"]},
+            "e2": {"id": "e2", "categories": ["fasnacht"]},
+            "e3": {"id": "e3", "categories": ["musik"]},
+            "e4": {"id": "e4", "categories": ["musik"]},
+            "e5": {"id": "e5", "categories": ["versammlung"]},
+            "e6": {"id": "e6", "categories": ["versammlung"]},
+        }
+
+    def test_filters_to_category(self) -> None:
+        """Only pairs involving the target category are evaluated."""
+        events = self._make_events_by_id()
+        gt_same = {("e1", "e2"), ("e3", "e4")}
+        gt_diff = {("e5", "e6")}
+        predicted = {("e1", "e2"), ("e3", "e4")}
+
+        result = evaluate_category_subset(gt_same, gt_diff, predicted, events, "fasnacht")
+        assert result.total_ground_truth_same == 1
+        assert result.true_positives == 1
+
+    def test_category_false_negative(self) -> None:
+        """Missing a category-specific pair is a false negative."""
+        events = self._make_events_by_id()
+        gt_same = {("e1", "e2")}
+        gt_diff: set[tuple[str, str]] = set()
+        predicted: set[tuple[str, str]] = set()
+
+        result = evaluate_category_subset(gt_same, gt_diff, predicted, events, "fasnacht")
+        assert result.false_negatives == 1
+        assert result.recall == 0.0
+
+    def test_category_false_positive(self) -> None:
+        """Predicting a category pair that is labeled different is a false positive."""
+        events = self._make_events_by_id()
+        gt_same: set[tuple[str, str]] = set()
+        gt_diff = {("e1", "e2")}
+        predicted = {("e1", "e2")}
+
+        result = evaluate_category_subset(gt_same, gt_diff, predicted, events, "fasnacht")
+        assert result.false_positives == 1
+        assert result.precision == 0.0
+
+    def test_empty_category_returns_zeros(self) -> None:
+        """Category with no matching pairs returns zero metrics."""
+        events = self._make_events_by_id()
+        gt_same = {("e1", "e2")}
+        gt_diff: set[tuple[str, str]] = set()
+        predicted = {("e1", "e2")}
+
+        result = evaluate_category_subset(gt_same, gt_diff, predicted, events, "sport")
+        assert result.total_ground_truth_same == 0
+        assert result.total_predicted_same == 0
+
+    def test_pair_included_if_either_event_has_category(self) -> None:
+        """A pair is included if EITHER event has the target category."""
+        events = {
+            "e1": {"id": "e1", "categories": ["fasnacht"]},
+            "e2": {"id": "e2", "categories": ["musik"]},
+        }
+        gt_same = {("e1", "e2")}
+        gt_diff: set[tuple[str, str]] = set()
+        predicted = {("e1", "e2")}
+
+        result = evaluate_category_subset(gt_same, gt_diff, predicted, events, "fasnacht")
+        assert result.total_ground_truth_same == 1
+        assert result.true_positives == 1
+
+    def test_missing_categories_field_excluded(self) -> None:
+        """Events without categories field -- pair still included if other has it."""
+        events = {
+            "e1": {"id": "e1"},
+            "e2": {"id": "e2", "categories": ["fasnacht"]},
+        }
+        gt_same = {("e1", "e2")}
+        gt_diff: set[tuple[str, str]] = set()
+        predicted = {("e1", "e2")}
+
+        result = evaluate_category_subset(gt_same, gt_diff, predicted, events, "fasnacht")
+        assert result.total_ground_truth_same == 1

@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: API & Browse Frontend** - FastAPI REST API and React frontend for searching and viewing canonical events
 - [x] **Phase 5: AI-Assisted Matching** - Gemini Flash integration for ambiguous pairs with caching and cost monitoring
 - [x] **Phase 6: Manual Review & Operations** - Review queue UI, split/merge operations, audit trail, and batch processing dashboard
-- [ ] **Phase 7: Accuracy Refinement** - German dialect synonyms, category-aware weights, source-type calibration
+- [x] **Phase 7: Accuracy Refinement** - German dialect synonyms, category-aware weights, source-type calibration
 
 ## Phase Details
 
@@ -128,10 +128,11 @@ Plans:
   1. German dialect synonyms (Fasnet/Fasching/Fastnacht/Karneval, etc.) are treated as equivalent during title matching, measurably reducing missed duplicates for carnival-season events
   2. Category-aware matching weights adjust scoring per event type (e.g., carnival events weighted differently than political events), verified by improved F1 on category-specific subsets of the ground truth
   3. Source-type-aware comparison adjusts for title format differences between artikel (journalistic headlines) and terminliste (event listing names)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 07-01: TBD
+- [x] 07-01-PLAN.md -- German dialect synonym dictionary (MTCH-07) + source-type-aware title scoring (MTCH-09): synonyms.yaml config, synonym loading/application, normalizer integration, cross_source_type TitleConfig, title_scorer changes, re-normalization script, tests
+- [x] 07-02-PLAN.md -- Category-aware matching weights (MTCH-08) + evaluation: CategoryWeightsConfig, resolve_weights in pipeline, category_weights in matching.yaml, category-specific F1 evaluation in harness, tests
 
 ## Progress
 
@@ -146,4 +147,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 4. API & Browse Frontend | 2/2 | Complete | 2026-02-28 |
 | 5. AI-Assisted Matching | 2/2 | Complete | 2026-02-28 |
 | 6. Manual Review & Operations | 2/2 | Complete | 2026-02-28 |
-| 7. Accuracy Refinement | 0/1 | Not started | - |
+| 7. Accuracy Refinement | 2/2 | Complete | 2026-02-28 |

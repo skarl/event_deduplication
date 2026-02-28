@@ -26,26 +26,26 @@ class TestGenerateCandidatePairs:
         assert pairs == [("a1", "b1")]
         assert stats.blocked_pairs == 1
 
-    def test_two_events_same_source_one_pair(self) -> None:
-        """Two events from the SAME source sharing a key -> 1 pair."""
+    def test_two_events_same_source_no_pairs(self) -> None:
+        """Two events from the SAME source sharing a key -> 0 pairs (cross-source only)."""
         events = [
             _evt("a1", "src_a", ["2026-03-01:freiburg"]),
             _evt("a2", "src_a", ["2026-03-01:freiburg"]),
         ]
         pairs, stats = generate_candidate_pairs(events)
-        assert pairs == [("a1", "a2")]
-        assert stats.blocked_pairs == 1
+        assert pairs == []
+        assert stats.blocked_pairs == 0
 
     def test_three_events_two_sources(self) -> None:
-        """3 events in same block -> 3 pairs (all combinations)."""
+        """3 events in same block -> 2 cross-source pairs (same-source excluded)."""
         events = [
             _evt("a1", "src_a", ["2026-03-01:freiburg"]),
             _evt("a2", "src_a", ["2026-03-01:freiburg"]),
             _evt("b1", "src_b", ["2026-03-01:freiburg"]),
         ]
         pairs, stats = generate_candidate_pairs(events)
-        assert len(pairs) == 3
-        assert ("a1", "a2") in pairs
+        assert len(pairs) == 2
+        assert ("a1", "a2") not in pairs  # same source, excluded
         assert ("a1", "b1") in pairs
         assert ("a2", "b1") in pairs
 

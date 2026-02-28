@@ -1,0 +1,18 @@
+# German dialect synonym groups for event title normalization.
+# Each group maps variant terms to a single canonical form.
+# Applied AFTER lowercasing and umlaut expansion, so all entries use expanded forms.
+# Longest variants listed first within each group for correct replacement order.
+
+synonym_groups:
+  fastnacht:
+    - fasnets    # compound prefix: "Fasnetsumzug" -> must match before "fasnet"
+    - fasent
+    - fasend
+    - fasnet
+    - fasnacht
+    - fasching
+    - karneval
+  hemdglunker:
+    - hemdklunker
+    - hemdglunki
+    - hendglunki
