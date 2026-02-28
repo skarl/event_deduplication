@@ -9,7 +9,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
-from pydantic import BaseModel
+import structlog
+from pydantic import BaseModel, model_validator
 
 
 class ScoringWeights(BaseModel):
@@ -19,6 +20,18 @@ class ScoringWeights(BaseModel):
     geo: float = 0.25
     title: float = 0.30
     description: float = 0.15
+
+    @model_validator(mode="after")
+    def warn_if_weights_dont_sum(self) -> "ScoringWeights":
+        """Log a warning if weights do not sum to approximately 1.0."""
+        total = self.date + self.geo + self.title + self.description
+        if abs(total - 1.0) > 0.01:
+            structlog.get_logger().warning(
+                "scoring_weights_sum_mismatch",
+                total=round(total, 4),
+                expected=1.0,
+            )
+        return self
 
 
 class ThresholdConfig(BaseModel):

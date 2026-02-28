@@ -214,3 +214,82 @@ class ProcessingHistoryEntry(BaseModel):
     files_processed: int
     events_ingested: int
     errors: int
+
+
+# --- Configuration schemas ---
+
+from event_dedup.matching.config import (
+    CanonicalConfig,
+    CategoryWeightsConfig,
+    ClusterConfig,
+    DateConfig,
+    GeoConfig,
+    MatchingConfig,
+    ScoringWeights,
+    ThresholdConfig,
+    TitleConfig,
+)
+
+
+class AIConfigResponse(BaseModel):
+    """AI matching config returned to the frontend -- excludes api_key."""
+
+    enabled: bool = False
+    model: str = "gemini-2.5-flash"
+    temperature: float = 0.1
+    max_output_tokens: int = 2048
+    max_concurrent_requests: int = 5
+    confidence_threshold: float = 0.6
+    cache_enabled: bool = True
+    cost_per_1m_input_tokens: float = 0.30
+    cost_per_1m_output_tokens: float = 2.50
+
+
+class ConfigResponse(BaseModel):
+    """Full matching configuration returned by GET /api/config."""
+
+    scoring: ScoringWeights = ScoringWeights()
+    thresholds: ThresholdConfig = ThresholdConfig()
+    geo: GeoConfig = GeoConfig()
+    date: DateConfig = DateConfig()
+    title: TitleConfig = TitleConfig()
+    cluster: ClusterConfig = ClusterConfig()
+    canonical: CanonicalConfig = CanonicalConfig()
+    ai: AIConfigResponse = AIConfigResponse()
+    category_weights: CategoryWeightsConfig = CategoryWeightsConfig()
+    has_api_key: bool = False
+    updated_at: str | None = None
+
+
+class ConfigUpdateRequest(BaseModel):
+    """Partial update payload for PATCH /api/config."""
+
+    scoring: ScoringWeights | None = None
+    thresholds: ThresholdConfig | None = None
+    geo: GeoConfig | None = None
+    date: DateConfig | None = None
+    title: TitleConfig | None = None
+    cluster: ClusterConfig | None = None
+    canonical: CanonicalConfig | None = None
+    ai: AIConfigResponse | None = None
+    category_weights: CategoryWeightsConfig | None = None
+    ai_api_key: str | None = None
+
+
+def config_to_response(
+    config: MatchingConfig,
+    has_api_key: bool = False,
+    updated_at: str | None = None,
+) -> dict:
+    """Convert a MatchingConfig to a dict suitable for ConfigResponse.
+
+    Replaces the ``ai`` section with :class:`AIConfigResponse` (excluding
+    the secret ``api_key`` field).
+    """
+    data = config.model_dump()
+    ai_data = data.pop("ai", {})
+    ai_data.pop("api_key", None)
+    data["ai"] = ai_data
+    data["has_api_key"] = has_api_key
+    data["updated_at"] = updated_at
+    return data
