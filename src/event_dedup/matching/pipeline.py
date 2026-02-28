@@ -264,3 +264,62 @@ def _avg_cluster_confidence(
     return sum(d.combined_score_value for d in cluster_decisions) / len(
         cluster_decisions
     )
+
+
+def rebuild_pipeline_result(
+    match_result: MatchResult,
+    events: list[dict],
+    config: MatchingConfig,
+) -> PipelineResult:
+    """Rebuild clustering and synthesis from an updated MatchResult.
+
+    Use this after AI resolution modifies match decisions. It re-runs
+    clustering and canonical synthesis using the updated decisions
+    while preserving the same logic as ``run_full_pipeline``.
+
+    Args:
+        match_result: Updated MatchResult (e.g., after AI resolution).
+        events: All event dicts.
+        config: Full matching configuration.
+
+    Returns:
+        A new ``PipelineResult`` with re-clustered and re-synthesized data.
+    """
+    # Lazy imports to avoid circular dependency (same as run_full_pipeline)
+    from event_dedup.canonical.synthesizer import synthesize_canonical
+    from event_dedup.clustering.graph_cluster import cluster_matches
+
+    all_event_ids = [e["id"] for e in events]
+    events_by_id = {e["id"]: e for e in events}
+
+    cluster_result = cluster_matches(
+        match_result.decisions, all_event_ids, config.cluster, events_by_id
+    )
+
+    canonical_events: list[dict] = []
+
+    for cluster in cluster_result.clusters:
+        sources = [events_by_id[eid] for eid in cluster]
+        canonical = synthesize_canonical(sources, config.canonical)
+        canonical["needs_review"] = False
+        canonical["match_confidence"] = _avg_cluster_confidence(
+            cluster, match_result.decisions
+        )
+        canonical_events.append(canonical)
+
+    for cluster in cluster_result.flagged_clusters:
+        sources = [events_by_id[eid] for eid in cluster]
+        canonical = synthesize_canonical(sources, config.canonical)
+        canonical["needs_review"] = True
+        canonical["match_confidence"] = _avg_cluster_confidence(
+            cluster, match_result.decisions
+        )
+        canonical_events.append(canonical)
+
+    return PipelineResult(
+        match_result=match_result,
+        cluster_result=cluster_result,
+        canonical_events=canonical_events,
+        canonical_count=len(canonical_events),
+        flagged_count=len(cluster_result.flagged_clusters),
+    )

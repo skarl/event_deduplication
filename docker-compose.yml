@@ -26,6 +26,7 @@ services:
       EVENT_DEDUP_DEAD_LETTER_DIR: "/data/dead_letters"
       EVENT_DEDUP_MATCHING_CONFIG_PATH: "config/matching.yaml"
       EVENT_DEDUP_LOG_JSON: "true"
+      EVENT_DEDUP_GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
       EVENT_DEDUP_LOG_LEVEL: "INFO"
       ALEMBIC_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@db:5432/event_dedup"
     volumes:

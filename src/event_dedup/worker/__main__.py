@@ -21,6 +21,12 @@ async def main() -> None:
 
     session_factory = get_session_factory()
     matching_config = load_matching_config(settings.matching_config_path)
+
+    # Override AI config from environment
+    if settings.gemini_api_key:
+        matching_config.ai.enabled = True
+        matching_config.ai.api_key = settings.gemini_api_key
+
     file_processor = FileProcessor(
         session_factory=session_factory,
         dead_letter_dir=settings.dead_letter_dir,

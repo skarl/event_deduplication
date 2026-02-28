@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     prefixes_config_path: Path = _CONFIG_DIR / "prefixes.yaml"
     city_aliases_path: Path = _CONFIG_DIR / "city_aliases.yaml"
     matching_config_path: Path = Path("config/matching.yaml")
+    gemini_api_key: str = ""
     log_json: bool = True
     log_level: str = "INFO"
 

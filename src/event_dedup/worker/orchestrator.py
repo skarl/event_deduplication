@@ -14,15 +14,47 @@ from pathlib import Path
 import structlog
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from event_dedup.ai_matching.resolver import resolve_ambiguous_pairs
 from event_dedup.ingestion.file_processor import FileProcessor
 from event_dedup.matching.config import MatchingConfig
-from event_dedup.matching.pipeline import run_full_pipeline
+from event_dedup.matching.pipeline import rebuild_pipeline_result, run_full_pipeline
 from event_dedup.worker.persistence import (
     load_all_events_as_dicts,
     replace_canonical_events,
 )
 
 logger = structlog.get_logger()
+
+
+async def _maybe_resolve_ai(
+    pipeline_result,
+    events: list[dict],
+    matching_config: MatchingConfig,
+    session_factory: async_sessionmaker,
+):
+    """Apply AI resolution to ambiguous pairs if enabled.
+
+    Calls resolve_ambiguous_pairs on the match result. If any ambiguous
+    pairs were resolved, rebuilds clustering and synthesis via
+    rebuild_pipeline_result. Returns the original result unchanged if
+    AI is disabled or no ambiguous pairs were resolved.
+    """
+    if not matching_config.ai.enabled or not matching_config.ai.api_key:
+        return pipeline_result
+
+    original_ambiguous = pipeline_result.match_result.ambiguous_count
+    updated_match_result = await resolve_ambiguous_pairs(
+        pipeline_result.match_result,
+        events,
+        matching_config.ai,
+        session_factory,
+    )
+
+    if updated_match_result.ambiguous_count == original_ambiguous:
+        return pipeline_result  # No changes, skip re-clustering
+
+    # Re-cluster and re-synthesize with updated decisions
+    return rebuild_pipeline_result(updated_match_result, events, matching_config)
 
 
 async def process_new_file(
@@ -60,6 +92,12 @@ async def process_new_file(
 
         # Step 3: Run matching pipeline (pure function)
         pipeline_result = run_full_pipeline(events, matching_config)
+
+        # Step 3.5: AI-assisted resolution of ambiguous pairs
+        pipeline_result = await _maybe_resolve_ai(
+            pipeline_result, events, matching_config, session_factory
+        )
+
         log.info(
             "matching_complete",
             matches=pipeline_result.match_result.match_count,
@@ -178,6 +216,12 @@ async def process_file_batch(
         log.info("events_loaded", total_events=len(events))
 
         pipeline_result = run_full_pipeline(events, matching_config)
+
+        # AI-assisted resolution of ambiguous pairs
+        pipeline_result = await _maybe_resolve_ai(
+            pipeline_result, events, matching_config, session_factory
+        )
+
         log.info(
             "matching_complete",
             matches=pipeline_result.match_result.match_count,
