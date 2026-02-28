@@ -1,0 +1,59 @@
+"""Geographic distance scorer using the Haversine formula.
+
+Returns a score in [0, 1] based on how close two events are
+geographically.  Missing or low-confidence coordinates return
+a neutral score (default 0.5).
+"""
+
+from __future__ import annotations
+
+import math
+
+from event_dedup.matching.config import GeoConfig
+
+
+def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Compute the great-circle distance between two points in kilometres."""
+    R = 6371.0  # Earth radius in km
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    )
+    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
+def geo_score(
+    event_a: dict, event_b: dict, config: GeoConfig | None = None
+) -> float:
+    """Compute geographic proximity score between two events.
+
+    Returns a float in [0, 1]:
+    - ``config.neutral_score`` if either event is missing coordinates
+      or has low geo confidence
+    - ``max(0.0, 1.0 - distance / max_distance_km)`` otherwise
+    """
+    if config is None:
+        config = GeoConfig()
+
+    lat_a = event_a.get("geo_latitude")
+    lon_a = event_a.get("geo_longitude")
+    conf_a = event_a.get("geo_confidence")
+
+    lat_b = event_b.get("geo_latitude")
+    lon_b = event_b.get("geo_longitude")
+    conf_b = event_b.get("geo_confidence")
+
+    # Missing coordinates -> neutral
+    if lat_a is None or lon_a is None or lat_b is None or lon_b is None:
+        return config.neutral_score
+
+    # Low confidence -> neutral
+    if conf_a is not None and conf_a < config.min_confidence:
+        return config.neutral_score
+    if conf_b is not None and conf_b < config.min_confidence:
+        return config.neutral_score
+
+    dist = _haversine_km(lat_a, lon_a, lat_b, lon_b)
+    return max(0.0, 1.0 - dist / config.max_distance_km)
