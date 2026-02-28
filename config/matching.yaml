@@ -1,0 +1,59 @@
+# =============================================================================
+# Matching Pipeline Configuration
+# =============================================================================
+# All parameters have sensible defaults.  Only include overrides here.
+# See src/event_dedup/matching/config.py for the full parameter reference.
+
+# --- Signal weights (must sum to 1.0) ---
+scoring:
+  date: 0.30          # Date overlap between events
+  geo: 0.25           # Geographic proximity
+  title: 0.30         # Title fuzzy-match similarity
+  description: 0.15   # Description similarity
+
+# --- Decision thresholds ---
+thresholds:
+  high: 0.75           # Combined score >= high  -> "match"
+  low: 0.35            # Combined score <= low   -> "no_match"
+                        # Between low and high    -> "ambiguous"
+
+# --- Geographic scoring ---
+geo:
+  max_distance_km: 10.0    # Events beyond this distance score 0.0
+  min_confidence: 0.85     # Geo coordinates below this confidence are ignored
+  neutral_score: 0.5       # Score when geo data is missing or low-confidence
+
+# --- Date/time scoring ---
+date:
+  time_tolerance_minutes: 30   # Times within this range are a perfect match
+  time_close_minutes: 90       # Times within this range get close_factor
+  close_factor: 0.7            # Multiplier for "close" time matches
+  far_factor: 0.3              # Multiplier for times farther apart
+
+# --- Title scoring ---
+title:
+  primary_weight: 0.7     # Weight for token_sort_ratio (primary signal)
+  secondary_weight: 0.3   # Weight for token_set_ratio (secondary signal)
+  blend_lower: 0.40       # Below this, use only primary score
+  blend_upper: 0.80       # Above this, use only primary score
+
+# --- Clustering ---
+cluster:
+  max_cluster_size: 15           # Flag clusters larger than this for review
+  min_internal_similarity: 0.40  # Minimum pairwise similarity within cluster
+
+# --- Canonical event creation ---
+canonical:
+  field_strategies:
+    title: longest_non_generic
+    short_description: longest
+    description: longest
+    highlights: union
+    location_name: most_complete
+    location_city: most_frequent
+    location_street: most_complete
+    geo: highest_confidence
+    categories: union
+    is_family_event: any_true
+    is_child_focused: any_true
+    admission_free: any_true
