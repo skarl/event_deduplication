@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     event_data_dir: Path = Path("./eventdata")
     prefixes_config_path: Path = _CONFIG_DIR / "prefixes.yaml"
     city_aliases_path: Path = _CONFIG_DIR / "city_aliases.yaml"
+    matching_config_path: Path = Path("config/matching.yaml")
+    log_json: bool = True
+    log_level: str = "INFO"
 
 
 @lru_cache
