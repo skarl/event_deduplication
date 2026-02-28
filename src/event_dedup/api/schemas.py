@@ -133,3 +133,84 @@ class PaginatedResponse(BaseModel, Generic[T]):
     page: int
     size: int
     pages: int
+
+
+# --- Review operation schemas ---
+
+
+class SplitRequest(BaseModel):
+    canonical_event_id: int
+    source_event_id: str
+    target_canonical_id: int | None = None  # None = create new canonical
+    operator: str = "anonymous"
+
+
+class MergeRequest(BaseModel):
+    source_canonical_id: int  # donor -- gets deleted
+    target_canonical_id: int  # survivor -- keeps all sources
+    operator: str = "anonymous"
+
+
+class SplitResponse(BaseModel):
+    original_canonical_id: int
+    new_canonical_id: int | None = None  # if new canonical was created
+    target_canonical_id: int | None = None  # if assigned to existing
+    original_deleted: bool = False
+
+
+class MergeResponse(BaseModel):
+    surviving_canonical_id: int
+    deleted_canonical_id: int
+    new_source_count: int
+
+
+class DismissRequest(BaseModel):
+    operator: str = "anonymous"
+    reason: str | None = None
+
+
+class AuditLogEntry(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    action_type: str
+    canonical_event_id: int | None
+    source_event_id: str | None
+    operator: str
+    details: dict | None
+    created_at: str  # ISO string
+
+
+# --- Dashboard schemas ---
+
+
+class FileProcessingStats(BaseModel):
+    total_files: int
+    total_events: int
+    completed: int
+    errors: int
+
+
+class MatchDistribution(BaseModel):
+    match: int = 0
+    no_match: int = 0
+    ambiguous: int = 0
+
+
+class CanonicalStats(BaseModel):
+    total: int
+    needs_review: int
+    avg_confidence: float | None
+
+
+class DashboardStats(BaseModel):
+    files: FileProcessingStats
+    matches: MatchDistribution
+    canonicals: CanonicalStats
+
+
+class ProcessingHistoryEntry(BaseModel):
+    date: str
+    files_processed: int
+    events_ingested: int
+    errors: int

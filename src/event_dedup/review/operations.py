@@ -73,13 +73,12 @@ async def split_source_from_canonical(
                     CanonicalEventSource.canonical_event_id == canonical_event_id
                 )
             )
-            original_canonical_stmt = sa.select(CanonicalEvent).where(
-                CanonicalEvent.id == canonical_event_id
+            # Use SQL DELETE (not ORM session.delete) to avoid cascade conflicts
+            await session.execute(
+                sa.delete(CanonicalEvent).where(
+                    CanonicalEvent.id == canonical_event_id
+                )
             )
-            original_canonical_result = await session.execute(original_canonical_stmt)
-            original_canonical = original_canonical_result.scalar_one_or_none()
-            if original_canonical:
-                await session.delete(original_canonical)
             original_deleted = True
 
         # 4. If 1+ remaining links: re-synthesize
