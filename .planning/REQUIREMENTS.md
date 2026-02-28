@@ -30,9 +30,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **AI-01**: Ambiguous event pairs (scoring between low and high threshold) are sent to an LLM for resolution
 - [ ] **AI-02**: AI matching uses Gemini Flash (or best cost-effective model determined during implementation research)
-- [ ] **AI-03**: AI responses include structured decision, confidence score, and reasoning
-- [ ] **AI-04**: AI match results are cached to avoid re-evaluating identical pairs
-- [ ] **AI-05**: AI usage is cost-monitored with per-batch and per-period reporting
+- [x] **AI-03**: AI responses include structured decision, confidence score, and reasoning
+- [x] **AI-04**: AI match results are cached to avoid re-evaluating identical pairs
+- [x] **AI-05**: AI usage is cost-monitored with per-batch and per-period reporting
 
 ### Canonical Event Management
 
@@ -115,9 +115,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MTCH-10 | Phase 2: Core Matching Pipeline | Complete |
 | AI-01 | Phase 5: AI-Assisted Matching | Pending |
 | AI-02 | Phase 5: AI-Assisted Matching | Pending |
-| AI-03 | Phase 5: AI-Assisted Matching | Pending |
-| AI-04 | Phase 5: AI-Assisted Matching | Pending |
-| AI-05 | Phase 5: AI-Assisted Matching | Pending |
+| AI-03 | Phase 5: AI-Assisted Matching | Complete (05-01) |
+| AI-04 | Phase 5: AI-Assisted Matching | Complete (05-01) |
+| AI-05 | Phase 5: AI-Assisted Matching | Complete (05-01) |
 | CANL-01 | Phase 2: Core Matching Pipeline | Complete |
 | CANL-02 | Phase 2: Core Matching Pipeline | Complete |
 | CANL-03 | Phase 2: Core Matching Pipeline | Complete |
@@ -147,4 +147,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-28 after Plan 04-02 completion (Phase 4 complete: UI-01/02/03/04)*
+*Last updated: 2026-02-28 after Plan 05-01 completion (AI-03/04/05 complete)*

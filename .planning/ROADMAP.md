@@ -101,7 +101,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- AI matching infrastructure: google-genai SDK, Pydantic schemas, prompt engineering, Gemini client, content-hash cache, cost tracker, AIMatchingConfig, DB models + Alembic migration
+- [x] 05-01-PLAN.md -- AI matching infrastructure: google-genai SDK, Pydantic schemas, prompt engineering, Gemini client, content-hash cache, cost tracker, AIMatchingConfig, DB models + Alembic migration
 - [ ] 05-02-PLAN.md -- Pipeline integration: resolver orchestrator, worker orchestrator AI step, evaluation harness comparison (deterministic vs AI F1), Docker env config
 
 ### Phase 6: Manual Review & Operations
@@ -144,6 +144,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 2. Core Matching Pipeline | 4/4 | Complete | 2026-02-28 |
 | 3. Pipeline Integration & Deployment | 2/2 | Complete | 2026-02-28 |
 | 4. API & Browse Frontend | 2/2 | Complete | 2026-02-28 |
-| 5. AI-Assisted Matching | 0/2 | Not started | - |
+| 5. AI-Assisted Matching | 1/2 | In progress | - |
 | 6. Manual Review & Operations | 0/2 | Not started | - |
 | 7. Accuracy Refinement | 0/1 | Not started | - |

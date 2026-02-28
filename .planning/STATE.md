@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 4: API & Browse Frontend -- COMPLETE
+**Current focus:** Phase 5: AI-Assisted Matching -- IN PROGRESS
 
 ## Current Position
 
-Phase: 4 of 7 (API & Browse Frontend) -- COMPLETE
-Plan: 2 of 2 in current phase (04-01 complete, 04-02 complete)
-Status: Phase 4 complete. Ready for Phase 5 planning.
-Last activity: 2026-02-28 -- Phase 4 Plan 2 (React Frontend SPA) complete
+Phase: 5 of 7 (AI-Assisted Matching) -- IN PROGRESS
+Plan: 1 of 2 in current phase (05-01 complete, 05-02 planned)
+Status: Plan 05-01 (AI Matching Infrastructure) complete. Ready for 05-02.
+Last activity: 2026-02-28 -- Plan 05-01 executed (2 tasks, 19 tests, 3m)
 
-Progress: [██████░░░░] 57%
+Progress: [███████░░░] 64%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 4.1m
-- Total execution time: 0.82 hours
+- Total plans completed: 13
+- Average duration: 4.0m
+- Total execution time: 0.87 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [██████░░░░] 57%
 | 2 | 4/4 | 17m | 4.3m |
 | 3 | 2/2 | 7m | 3.5m |
 | 4 | 2/2 | 13m | 6.5m |
+| 5 | 1/2 | 3m | 3m |
 
 **Recent Trend:**
-- Last 5 plans: 02-04 (6m), 03-01 (5m), 03-02 (2m), 04-01 (8m), 04-02 (5m)
+- Last 5 plans: 03-01 (5m), 03-02 (2m), 04-01 (8m), 04-02 (5m), 05-01 (3m)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -89,6 +90,11 @@ Recent decisions affecting current work:
 - [04-02]: URL search params for filter/page state (enables browser back/forward)
 - [04-02]: Hand-crafted Tailwind components instead of component library (minimal deps)
 - [04-02]: Multi-stage Docker build (Node 22 build + Nginx alpine serve)
+- [05-01]: google-genai SDK (unified, not deprecated google-generativeai) for Gemini API access
+- [05-01]: Content-hash cache uses SHA-256 of matching-relevant fields only, with canonical ID ordering
+- [05-01]: Cache staleness detection by model name comparison (auto-invalidates on model upgrade)
+- [05-01]: AIMatchingConfig defaults to enabled=False for safe rollout
+- [05-01]: Gemini 2.5 Flash pricing for cost estimation (0.30/1M input, 2.50/1M output)
 
 ### Ground Truth Dataset
 
@@ -111,6 +117,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 04-02-PLAN.md (Phase 4 complete)
+Stopped at: Completed 05-01-PLAN.md
 Resume file: N/A
-Next action: Plan Phase 5 (/gsd:plan-phase 5)
+Next action: Execute Plan 05-02 (pipeline integration)
