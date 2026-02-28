@@ -71,8 +71,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [x] 03-01-PLAN.md -- Pipeline worker service: file watcher (watchfiles), orchestrator (ingest -> match -> persist), canonical persistence (clear-and-replace), structured logging (structlog)
+- [ ] 03-02-PLAN.md -- Docker infrastructure: Dockerfiles (worker + API + nginx), docker-compose.yml, entrypoint with Alembic, FastAPI skeleton, .dockerignore
 
 ### Phase 4: API & Browse Frontend
 **Goal**: Users can search, browse, and inspect canonical events and their source events through a web interface
@@ -142,7 +142,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 |-------|----------------|--------|-----------|
 | 1. Foundation & Ground Truth | 4/4 | Complete | 2026-02-27 |
 | 2. Core Matching Pipeline | 4/4 | Complete | 2026-02-28 |
-| 3. Pipeline Integration & Deployment | 0/2 | Not started | - |
+| 3. Pipeline Integration & Deployment | 1/2 | In progress | - |
 | 4. API & Browse Frontend | 0/2 | Not started | - |
 | 5. AI-Assisted Matching | 0/2 | Not started | - |
 | 6. Manual Review & Operations | 0/2 | Not started | - |

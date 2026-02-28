@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 2: Core Matching Pipeline -- COMPLETE
+**Current focus:** Phase 3: Pipeline Integration & Deployment -- IN PROGRESS
 
 ## Current Position
 
-Phase: 2 of 7 (Core Matching Pipeline) -- COMPLETE
-Plan: 4 of 4 in current phase (02-01, 02-02, 02-03, 02-04 complete)
-Status: Phase 2 complete. Full matching pipeline operational: blocking -> scoring -> clustering -> synthesis. Next: Phase 3 (pipeline integration + deployment)
-Last activity: 2026-02-28 -- Completed 02-04 (canonical synthesis + enrichment + full pipeline)
+Phase: 3 of 7 (Pipeline Integration & Deployment) -- IN PROGRESS
+Plan: 1 of 2 in current phase (03-01 complete, 03-02 pending)
+Status: Executing Phase 3 Wave 2 (03-02: Docker infrastructure)
+Last activity: 2026-02-28 -- Completed 03-01 pipeline worker service
 
-Progress: [████░░░░░░] 35%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 4m
-- Total execution time: 0.53 hours
+- Total plans completed: 9
+- Average duration: 4.2m
+- Total execution time: 0.62 hours
 
 **By Phase:**
 
@@ -30,9 +30,11 @@ Progress: [████░░░░░░] 35%
 | 1 | 4/4 | 20m | 5m |
 | 2 | 4/4 | 17m | 4.3m |
 
+| 3 | 1/2 | 5m | 5m |
+
 **Recent Trend:**
-- Last 5 plans: 02-01 (5m), 02-02 (4m), 02-03 (2m), 02-04 (6m)
-- Trend: steady (02-04 larger scope: synthesis + enrichment + pipeline + evaluation + e2e tests)
+- Last 5 plans: 02-02 (4m), 02-03 (2m), 02-04 (6m), 03-01 (5m)
+- Trend: steady
 
 *Updated after each plan completion*
 
@@ -74,6 +76,9 @@ Recent decisions affecting current work:
 - [02-04]: TYPE_CHECKING guard for ClusterResult type annotation in PipelineResult dataclass
 - [02-04]: Provenance uses "union_all_sources" for list/date fields since multiple sources contribute
 - [02-04]: Boolean provenance tracks first source with True value
+- [03-01]: Explicit CanonicalEventSource delete before CanonicalEvent delete for SQLite CASCADE compatibility
+- [03-01]: Source links derived from cluster membership (not field_provenance) for completeness
+- [03-01]: Separate transactions for file ingestion and canonical persistence (clear-and-replace rebuilds all)
 
 ### Ground Truth Dataset
 
@@ -96,6 +101,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 02-04-PLAN.md (canonical synthesis + enrichment + full pipeline). Phase 2 COMPLETE.
-Resume file: .planning/phases/03/03-01-PLAN.md
-Next action: Plan and execute Phase 3 (pipeline integration + deployment)
+Stopped at: Completed 03-01-PLAN.md (pipeline worker service: watcher, orchestrator, persistence, logging)
+Resume file: .planning/phases/03/03-02-PLAN.md
+Next action: Execute 03-02 (Docker infrastructure: Dockerfiles, docker-compose, entrypoint, FastAPI skeleton)
