@@ -71,10 +71,19 @@ def _time_proximity_factor(
     if not time_a or not time_b:
         return 1.0
     try:
-        ta = datetime.strptime(time_a, "%H:%M")
-        tb = datetime.strptime(time_b, "%H:%M")
+        ta = datetime.strptime(time_a, "%H:%M:%S")
     except ValueError:
-        return 1.0
+        try:
+            ta = datetime.strptime(time_a, "%H:%M")
+        except ValueError:
+            return 1.0
+    try:
+        tb = datetime.strptime(time_b, "%H:%M:%S")
+    except ValueError:
+        try:
+            tb = datetime.strptime(time_b, "%H:%M")
+        except ValueError:
+            return 1.0
     diff_minutes = abs((ta - tb).total_seconds()) / 60.0
     if diff_minutes <= config.time_tolerance_minutes:
         return 1.0
