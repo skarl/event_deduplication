@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation & Ground Truth** - Database schema, data models, JSON ingestion, preprocessing, and labeled evaluation dataset
 - [x] **Phase 2: Core Matching Pipeline** - Multi-signal blocking, Tier 1 scoring, graph clustering, and canonical event synthesis
 - [x] **Phase 3: Pipeline Integration & Deployment** - File watcher, end-to-end pipeline orchestration, Docker containers, and docker-compose
-- [ ] **Phase 4: API & Browse Frontend** - FastAPI REST API and React frontend for searching and viewing canonical events
+- [x] **Phase 4: API & Browse Frontend** - FastAPI REST API and React frontend for searching and viewing canonical events
 - [ ] **Phase 5: AI-Assisted Matching** - Gemini Flash integration for ambiguous pairs with caching and cost monitoring
 - [ ] **Phase 6: Manual Review & Operations** - Review queue UI, split/merge operations, audit trail, and batch processing dashboard
 - [ ] **Phase 7: Accuracy Refinement** - German dialect synonyms, category-aware weights, source-type calibration
@@ -86,8 +86,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md -- FastAPI REST API: Pydantic schemas, route structure, pg_trgm search, date range filtering, API tests
-- [ ] 04-02-PLAN.md -- React frontend: Vite + TypeScript + TanStack Query, event list/detail/source comparison components, Docker + Nginx
+- [x] 04-01-PLAN.md -- FastAPI REST API: Pydantic schemas, route structure, pg_trgm search, date range filtering, API tests
+- [x] 04-02-PLAN.md -- React frontend: Vite + TypeScript + TanStack Query, event list/detail/source comparison components, Docker + Nginx
 
 ### Phase 5: AI-Assisted Matching
 **Goal**: Ambiguous event pairs that deterministic matching cannot confidently resolve are sent to Gemini Flash for AI-assisted resolution, improving accuracy on the hardest cases
@@ -143,7 +143,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 1. Foundation & Ground Truth | 4/4 | Complete | 2026-02-27 |
 | 2. Core Matching Pipeline | 4/4 | Complete | 2026-02-28 |
 | 3. Pipeline Integration & Deployment | 2/2 | Complete | 2026-02-28 |
-| 4. API & Browse Frontend | 0/2 | Planned | - |
+| 4. API & Browse Frontend | 2/2 | Complete | 2026-02-28 |
 | 5. AI-Assisted Matching | 0/2 | Not started | - |
 | 6. Manual Review & Operations | 0/2 | Not started | - |
 | 7. Accuracy Refinement | 0/1 | Not started | - |

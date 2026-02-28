@@ -51,10 +51,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Frontend: Browse & Search
 
-- [ ] **UI-01**: Searchable paginated list of canonical events with filters for title, city, date range, and category
-- [ ] **UI-02**: Canonical event detail view shows all fields (title, description, highlights, dates, location, categories, flags)
-- [ ] **UI-03**: Drill-down from canonical event to all contributing source events with side-by-side comparison
-- [ ] **UI-04**: Match confidence indicators show per-source signal scores (title similarity %, geo distance, date match)
+- [x] **UI-01**: Searchable paginated list of canonical events with filters for title, city, date range, and category
+- [x] **UI-02**: Canonical event detail view shows all fields (title, description, highlights, dates, location, categories, flags)
+- [x] **UI-03**: Drill-down from canonical event to all contributing source events with side-by-side comparison
+- [x] **UI-04**: Match confidence indicators show per-source signal scores (title similarity %, geo distance, date match)
 
 ### Frontend: Manual Review
 
@@ -127,10 +127,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PIPE-03 | Phase 1: Foundation & Ground Truth | Complete |
 | PIPE-04 | Phase 1: Foundation & Ground Truth | Complete |
 | PIPE-05 | Phase 3: Pipeline Integration & Deployment | Complete (03-01) |
-| UI-01 | Phase 4: API & Browse Frontend | Pending |
-| UI-02 | Phase 4: API & Browse Frontend | Pending |
-| UI-03 | Phase 4: API & Browse Frontend | Pending |
-| UI-04 | Phase 4: API & Browse Frontend | Pending |
+| UI-01 | Phase 4: API & Browse Frontend | Complete (04-02) |
+| UI-02 | Phase 4: API & Browse Frontend | Complete (04-02) |
+| UI-03 | Phase 4: API & Browse Frontend | Complete (04-02) |
+| UI-04 | Phase 4: API & Browse Frontend | Complete (04-02) |
 | REV-01 | Phase 6: Manual Review & Operations | Pending |
 | REV-02 | Phase 6: Manual Review & Operations | Pending |
 | REV-03 | Phase 6: Manual Review & Operations | Pending |
@@ -147,4 +147,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-28 after Plan 03-02 completion (Phase 3 complete: DEPL-01/02/03)*
+*Last updated: 2026-02-28 after Plan 04-02 completion (Phase 4 complete: UI-01/02/03/04)*
