@@ -8,6 +8,8 @@ Provides two core functions:
 
 from __future__ import annotations
 
+import datetime as dt
+
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -114,6 +116,8 @@ async def replace_canonical_events(
             geo_longitude=canonical_dict.get("geo_longitude"),
             geo_confidence=canonical_dict.get("geo_confidence"),
             dates=canonical_dict.get("dates"),
+            first_date=_parse_date(canonical_dict.get("first_date")),
+            last_date=_parse_date(canonical_dict.get("last_date")),
             categories=canonical_dict.get("categories"),
             is_family_event=canonical_dict.get("is_family_event"),
             is_child_focused=canonical_dict.get("is_child_focused"),
@@ -150,3 +154,10 @@ async def replace_canonical_events(
         session.add(match_decision)
 
     return len(pipeline_result.canonical_events)
+
+
+def _parse_date(val: str | None) -> dt.date | None:
+    """Parse an ISO date string to a date object."""
+    if val is None:
+        return None
+    return dt.date.fromisoformat(val)

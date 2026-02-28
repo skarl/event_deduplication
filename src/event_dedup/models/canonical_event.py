@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -46,6 +47,8 @@ class CanonicalEvent(Base):
 
     # Dates & categories (JSON for SQLite compatibility)
     dates: Mapped[list | None] = mapped_column(sa.JSON, nullable=True)
+    first_date: Mapped[dt.date | None] = mapped_column(sa.Date, nullable=True, index=True)
+    last_date: Mapped[dt.date | None] = mapped_column(sa.Date, nullable=True, index=True)
     categories: Mapped[list | None] = mapped_column(sa.JSON, nullable=True)
 
     # Event metadata

@@ -86,6 +86,23 @@ def synthesize_canonical(
     result["dates"] = _union_dates(source_events)
     provenance["dates"] = "union_all_sources"
 
+    # Compute first_date / last_date for efficient range filtering
+    all_dates: list[str] = []
+    for d in result["dates"]:
+        date_str = d.get("date")
+        if date_str:
+            all_dates.append(date_str)
+        end_date_str = d.get("end_date")
+        if end_date_str:
+            all_dates.append(end_date_str)
+    if all_dates:
+        all_dates.sort()
+        result["first_date"] = all_dates[0]
+        result["last_date"] = all_dates[-1]
+    else:
+        result["first_date"] = None
+        result["last_date"] = None
+
     # --- Categories (union) ---
     cat_val, cat_prov = _select_union_lists(source_events, "categories")
     result["categories"] = cat_val
