@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: event_dedup
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d event_dedup"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    environment:
+      EVENT_DEDUP_DATABASE_URL: "postgresql+asyncpg://postgres:postgres@db:5432/event_dedup"
+      EVENT_DEDUP_DATABASE_URL_SYNC: "postgresql+psycopg2://postgres:postgres@db:5432/event_dedup"
+      EVENT_DEDUP_EVENT_DATA_DIR: "/data/events"
+      EVENT_DEDUP_DEAD_LETTER_DIR: "/data/dead_letters"
+      EVENT_DEDUP_MATCHING_CONFIG_PATH: "config/matching.yaml"
+      EVENT_DEDUP_LOG_JSON: "true"
+      EVENT_DEDUP_LOG_LEVEL: "INFO"
+      ALEMBIC_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@db:5432/event_dedup"
+    volumes:
+      - ./eventdata:/data/events
+      - ./dead_letters:/data/dead_letters
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    environment:
+      EVENT_DEDUP_DATABASE_URL: "postgresql+asyncpg://postgres:postgres@db:5432/event_dedup"
+      EVENT_DEDUP_DATABASE_URL_SYNC: "postgresql+psycopg2://postgres:postgres@db:5432/event_dedup"
+      ALEMBIC_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@db:5432/event_dedup"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./docker/nginx-placeholder.html:/usr/share/nginx/html/index.html:ro
+
+volumes:
+  pgdata:

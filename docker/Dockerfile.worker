@@ -1,0 +1,45 @@
+# Stage 1: Build with uv
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_DEV=1 \
+    UV_PYTHON_DOWNLOADS=0
+
+WORKDIR /app
+
+# Install dependencies (cached unless lock/pyproject changes)
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project --no-editable
+
+# Copy source and install project
+COPY . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-editable
+
+# Stage 2: Runtime
+FROM python:3.12-slim-bookworm
+
+# Install pg client for Alembic psycopg2 (needed at runtime for migrations)
+RUN apt-get update && apt-get install -y --no-install-recommends libpq5 && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd --system --gid 999 app \
+    && useradd --system --gid 999 --uid 999 --create-home app
+
+COPY --from=builder --chown=app:app /app /app
+
+ENV PATH="/app/.venv/bin:$PATH"
+WORKDIR /app
+
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Health check: verify worker process is running
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+    CMD python -c "import subprocess; subprocess.run(['ps', 'ax'], check=True, capture_output=True)" || exit 1
+
+USER app
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python", "-m", "event_dedup.worker"]
