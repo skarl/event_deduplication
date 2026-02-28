@@ -2,7 +2,7 @@
 title: Investigate why near-identical events show only 80% match in review
 area: matching
 priority: high
-status: open
+status: resolved
 created: 2026-02-28
 ---
 
@@ -42,6 +42,14 @@ Two events that appear to be the same real-world event are showing only ~80% mat
 4. Check current auto-merge threshold vs the 80% score
 5. Consider whether source PDF city should even factor into matching (the venue location is what matters)
 
-## Context
+## Resolution (2026-02-28)
 
-Docker is running — can query the API or database directly to inspect scoring details.
+**Root cause:** Two neutral 0.5 scores were dragging the combined score to 0.80:
+
+1. **Geo scorer (0.5 → 1.0):** Both events had identical coordinates (48.117019, 7.986537) but `geo_confidence=0.7422 < min_confidence=0.85`. The confidence gate returned neutral 0.5 even though identical coordinates prove the location is the same. **Fix:** Skip confidence gate when coordinates are identical (within 1e-6 epsilon).
+
+2. **Description scorer (0.5 → 0.99):** The scorer only used `event.get("description")` which was empty for both terminliste events. The actual text was in `short_description`. **Fix:** Fall back to `short_description` when `description` is empty.
+
+**Note:** City field ("elt" vs "elz") was NOT the culprit — city is only used for blocking, not scoring.
+
+**Result:** Combined score improved from 0.80 to 0.9991, well above the 0.75 auto-merge threshold.

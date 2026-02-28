@@ -156,7 +156,25 @@ class TestGeoScore:
 
     def test_low_confidence(self) -> None:
         a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.50}
-        b = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.95}
+        b = {"geo_latitude": 48.001, "geo_longitude": 7.801, "geo_confidence": 0.95}
+        assert geo_score(a, b) == 0.5
+
+    def test_identical_coords_low_confidence(self) -> None:
+        """Identical coordinates bypass confidence gate — consistent geocoding is a strong signal."""
+        a = {"geo_latitude": 48.117019, "geo_longitude": 7.986537, "geo_confidence": 0.74}
+        b = {"geo_latitude": 48.117019, "geo_longitude": 7.986537, "geo_confidence": 0.74}
+        assert geo_score(a, b) == 1.0
+
+    def test_identical_coords_both_low_confidence(self) -> None:
+        """Even very low confidence should be bypassed when coords are identical."""
+        a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.30}
+        b = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.30}
+        assert geo_score(a, b) == 1.0
+
+    def test_different_coords_low_confidence_still_neutral(self) -> None:
+        """Different coordinates with low confidence should still return neutral."""
+        a = {"geo_latitude": 48.0, "geo_longitude": 7.8, "geo_confidence": 0.50}
+        b = {"geo_latitude": 48.05, "geo_longitude": 7.85, "geo_confidence": 0.95}
         assert geo_score(a, b) == 0.5
 
     def test_no_confidence_field(self) -> None:
@@ -372,3 +390,21 @@ class TestDescriptionScore:
         b = {"description": "Konzert der Philharmonie im Stadtpark fuer Familien."}
         score = description_score(a, b)
         assert 0.3 < score < 0.9
+
+    def test_short_description_fallback(self) -> None:
+        """Falls back to short_description when description is missing."""
+        a = {"short_description": "Ein tolles Event im Freien mit Musik."}
+        b = {"short_description": "Ein tolles Event im Freien mit Musik."}
+        assert description_score(a, b) == 1.0
+
+    def test_short_description_fallback_one_empty(self) -> None:
+        """Falls back to short_description when description is empty string."""
+        a = {"description": "", "short_description": "Ein tolles Event"}
+        b = {"description": "", "short_description": "Ein tolles Event"}
+        assert description_score(a, b) == 1.0
+
+    def test_description_preferred_over_short(self) -> None:
+        """When description is present, short_description is not used."""
+        a = {"description": "Full description here", "short_description": "Short"}
+        b = {"description": "Full description here", "short_description": "Different short"}
+        assert description_score(a, b) == 1.0

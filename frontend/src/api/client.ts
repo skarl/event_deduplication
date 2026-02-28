@@ -2,7 +2,7 @@ import type {
   CanonicalEventDetail, CanonicalEventSummary, EventFilters, PaginatedResponse,
   SplitRequest, SplitResponse, MergeRequest, MergeResponse,
   DismissRequest, AuditLogEntry, DashboardStats, ProcessingHistoryEntry,
-  ConfigResponse, ConfigUpdateRequest,
+  ConfigResponse, ConfigUpdateRequest, ExportParams,
 } from '../types';
 
 const API_BASE = '/api';
@@ -150,6 +150,35 @@ export async function fetchConfig(): Promise<ConfigResponse> {
   const res = await fetch(`${API_BASE}/config`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
+}
+
+// --- Export ---
+
+export async function exportEvents(params: ExportParams): Promise<void> {
+  const res = await fetch(`${API_BASE}/export`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+    throw new Error(err.detail || `Export failed: ${res.status}`);
+  }
+
+  // Extract filename from Content-Disposition header
+  const disposition = res.headers.get('Content-Disposition') || '';
+  const filename = disposition.match(/filename="(.+)"/)?.[1] || 'export.json';
+
+  // Trigger browser download
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 export async function updateConfig(updates: ConfigUpdateRequest): Promise<ConfigResponse> {

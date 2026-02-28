@@ -276,6 +276,11 @@ export interface ConfigResponse {
   updated_at: string | null;
 }
 
+export interface ExportParams {
+  created_after?: string | null;
+  modified_after?: string | null;
+}
+
 export interface ConfigUpdateRequest {
   scoring?: Partial<ScoringWeights>;
   thresholds?: Partial<ThresholdConfig>;

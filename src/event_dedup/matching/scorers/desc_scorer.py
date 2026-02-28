@@ -17,8 +17,8 @@ def description_score(event_a: dict, event_b: dict) -> float:
     - 0.4 if only one description is missing
     - ``token_sort_ratio / 100`` otherwise
     """
-    desc_a = (event_a.get("description") or "").strip()
-    desc_b = (event_b.get("description") or "").strip()
+    desc_a = (event_a.get("description") or event_a.get("short_description") or "").strip()
+    desc_b = (event_b.get("description") or event_b.get("short_description") or "").strip()
 
     if not desc_a and not desc_b:
         return 0.5

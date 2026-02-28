@@ -63,11 +63,18 @@ def geo_score(
     if lat_a is None or lon_a is None or lat_b is None or lon_b is None:
         return config.neutral_score
 
-    # Low confidence -> neutral
-    if conf_a is not None and conf_a < config.min_confidence:
-        return config.neutral_score
-    if conf_b is not None and conf_b < config.min_confidence:
-        return config.neutral_score
+    # When both events have (near-)identical coordinates, the geocoder
+    # placed them at the same spot — skip the confidence gate because
+    # consistent results are a strong location signal regardless of
+    # individual confidence values.
+    coords_identical = abs(lat_a - lat_b) < 1e-6 and abs(lon_a - lon_b) < 1e-6
+
+    # Low confidence -> neutral (unless coordinates match)
+    if not coords_identical:
+        if conf_a is not None and conf_a < config.min_confidence:
+            return config.neutral_score
+        if conf_b is not None and conf_b < config.min_confidence:
+            return config.neutral_score
 
     dist = _haversine_km(lat_a, lon_a, lat_b, lon_b)
     score = max(0.0, 1.0 - dist / config.max_distance_km)
