@@ -1,10 +1,9 @@
 """Candidate pair generator using blocking keys.
 
-Generates cross-source event pairs that share at least one blocking key.
-Same-source pairs are excluded (cross-source enforcement at pair generation
-level per decision [02-02]).  Pairs use canonical ordering (id_a < id_b)
-and are deduplicated across blocking groups.  Also computes blocking
-reduction statistics to verify that blocking is practical at scale.
+Generates event pairs that share at least one blocking key, including
+same-source pairs.  Pairs use canonical ordering (id_a < id_b) and are
+deduplicated across blocking groups.  Also computes blocking reduction
+statistics to verify that blocking is practical at scale.
 """
 
 from __future__ import annotations
@@ -32,12 +31,12 @@ class CandidatePairStats:
 def generate_candidate_pairs(
     events: list[dict],
 ) -> tuple[list[tuple[str, str]], CandidatePairStats]:
-    """Generate cross-source candidate pairs using blocking keys.
+    """Generate candidate pairs using blocking keys.
 
-    Only cross-source pairs are generated (same-source pairs are excluded).
-    Pairs use canonical ordering (``id_a < id_b``) and are deduplicated
-    across blocking groups so that events sharing multiple blocking keys
-    produce each pair only once.
+    Both cross-source and same-source pairs are generated.  Pairs use
+    canonical ordering (``id_a < id_b``) and are deduplicated across
+    blocking groups so that events sharing multiple blocking keys produce
+    each pair only once.
 
     Args:
         events: List of event dicts.  Each must have ``"id"``,
@@ -52,15 +51,12 @@ def generate_candidate_pairs(
         for key in event.get("blocking_keys") or []:
             blocking_index.setdefault(key, []).append(event)
 
-    # Generate cross-source pairs within each block (same-source excluded)
+    # Generate all pairs within each block (including same-source)
     seen: set[tuple[str, str]] = set()
     for block_events in blocking_index.values():
         for i in range(len(block_events)):
             for j in range(i + 1, len(block_events)):
                 evt_a, evt_b = block_events[i], block_events[j]
-                # Skip same-source pairs
-                if evt_a["source_code"] == evt_b["source_code"]:
-                    continue
                 # Canonical ordering: smaller id first
                 pair = tuple(sorted([evt_a["id"], evt_b["id"]]))
                 seen.add(pair)  # type: ignore[arg-type]

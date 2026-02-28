@@ -246,8 +246,8 @@ class TestScoreCandidatePairs:
             assert len(matching_dec) == 1
             assert matching_dec[0].decision == "match"
 
-    def test_cross_source_enforcement(self) -> None:
-        """Same-source events sharing a blocking key -> 0 decisions."""
+    def test_same_source_events_are_matched(self) -> None:
+        """Same-source events sharing a blocking key are matched (not excluded)."""
         events = [
             make_event(
                 id="a1",
@@ -265,10 +265,8 @@ class TestScoreCandidatePairs:
             ),
         ]
         result = score_candidate_pairs(events, MatchingConfig())
-        assert len(result.decisions) == 0
-        assert result.match_count == 0
-        assert result.ambiguous_count == 0
-        assert result.no_match_count == 0
+        assert len(result.decisions) == 1
+        assert result.match_count == 1
 
     def test_config_high_threshold_no_matches(self) -> None:
         """Custom config with very high threshold -> no match decisions.
