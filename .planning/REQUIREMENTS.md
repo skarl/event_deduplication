@@ -15,11 +15,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Matching Core
 
-- [ ] **MTCH-01**: System scores event similarity using multiple signals: date, geo proximity, title, and description
+- [x] **MTCH-01**: System scores event similarity using multiple signals: date, geo proximity, title, and description
 - [x] **MTCH-02**: System uses blocking by date + city/geo grid to reduce candidate comparisons (>95% reduction)
-- [ ] **MTCH-03**: Date matching handles same-day events with time tolerance (~30 min) and multi-day event date range overlap
-- [ ] **MTCH-04**: Geo-proximity matching uses haversine distance weighted by each event's geo confidence score
-- [ ] **MTCH-05**: Fuzzy title matching handles German compound words, umlauts, and OCR artifacts
+- [x] **MTCH-03**: Date matching handles same-day events with time tolerance (~30 min) and multi-day event date range overlap
+- [x] **MTCH-04**: Geo-proximity matching uses haversine distance weighted by each event's geo confidence score
+- [x] **MTCH-05**: Fuzzy title matching handles German compound words, umlauts, and OCR artifacts
 - [x] **MTCH-06**: Similarity thresholds are configurable without code changes (high-confidence auto-match, ambiguous zone, auto-reject)
 - [ ] **MTCH-07**: German dialect synonym dictionary maps equivalent terms (Fasnet/Fasching/Fastnacht/Karneval etc.)
 - [ ] **MTCH-08**: Category-aware matching weights adjust calibration per event type (carnival events weighted differently than political events)
@@ -36,10 +36,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Canonical Event Management
 
-- [ ] **CANL-01**: Canonical event is synthesized by selecting the best field value from each source (longest description, most precise location, richest highlights, etc.)
-- [ ] **CANL-02**: Field-level provenance tracks which source event contributed each canonical field
-- [ ] **CANL-03**: When new source events match an existing canonical, the canonical is enriched with any better information without downgrading existing good data
-- [ ] **CANL-04**: Each match/group decision has a confidence score (0-1) derived from individual signal scores
+- [x] **CANL-01**: Canonical event is synthesized by selecting the best field value from each source (longest description, most precise location, richest highlights, etc.)
+- [x] **CANL-02**: Field-level provenance tracks which source event contributed each canonical field
+- [x] **CANL-03**: When new source events match an existing canonical, the canonical is enriched with any better information without downgrading existing good data
+- [x] **CANL-04**: Each match/group decision has a confidence score (0-1) derived from individual signal scores
 
 ### Data Pipeline
 
@@ -103,11 +103,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EVAL-01 | Phase 1: Foundation & Ground Truth | Pending |
 | EVAL-02 | Phase 1: Foundation & Ground Truth | Complete |
 | EVAL-03 | Phase 1: Foundation & Ground Truth | Complete |
-| MTCH-01 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-01 | Phase 2: Core Matching Pipeline | Complete |
 | MTCH-02 | Phase 2: Core Matching Pipeline | Complete |
-| MTCH-03 | Phase 2: Core Matching Pipeline | Pending |
-| MTCH-04 | Phase 2: Core Matching Pipeline | Pending |
-| MTCH-05 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-03 | Phase 2: Core Matching Pipeline | Complete |
+| MTCH-04 | Phase 2: Core Matching Pipeline | Complete |
+| MTCH-05 | Phase 2: Core Matching Pipeline | Complete |
 | MTCH-06 | Phase 2: Core Matching Pipeline | Complete |
 | MTCH-07 | Phase 7: Accuracy Refinement | Pending |
 | MTCH-08 | Phase 7: Accuracy Refinement | Pending |
@@ -118,10 +118,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AI-03 | Phase 5: AI-Assisted Matching | Pending |
 | AI-04 | Phase 5: AI-Assisted Matching | Pending |
 | AI-05 | Phase 5: AI-Assisted Matching | Pending |
-| CANL-01 | Phase 2: Core Matching Pipeline | Pending |
-| CANL-02 | Phase 2: Core Matching Pipeline | Pending |
-| CANL-03 | Phase 2: Core Matching Pipeline | Pending |
-| CANL-04 | Phase 2: Core Matching Pipeline | Pending |
+| CANL-01 | Phase 2: Core Matching Pipeline | Complete |
+| CANL-02 | Phase 2: Core Matching Pipeline | Complete |
+| CANL-03 | Phase 2: Core Matching Pipeline | Complete |
+| CANL-04 | Phase 2: Core Matching Pipeline | Complete |
 | PIPE-01 | Phase 3: Pipeline Integration & Deployment | Pending |
 | PIPE-02 | Phase 1: Foundation & Ground Truth | Complete |
 | PIPE-03 | Phase 1: Foundation & Ground Truth | Complete |
@@ -147,4 +147,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-28 after Plan 02-03 completion (MTCH-10 complete)*
+*Last updated: 2026-02-28 after Plan 02-04 completion (Phase 2 complete: MTCH-01/03/04/05, CANL-01/02/03/04)*

@@ -13,7 +13,7 @@ This roadmap takes the event deduplication service from zero to a fully operatio
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Ground Truth** - Database schema, data models, JSON ingestion, preprocessing, and labeled evaluation dataset
-- [ ] **Phase 2: Core Matching Pipeline** - Multi-signal blocking, Tier 1 scoring, graph clustering, and canonical event synthesis
+- [x] **Phase 2: Core Matching Pipeline** - Multi-signal blocking, Tier 1 scoring, graph clustering, and canonical event synthesis
 - [ ] **Phase 3: Pipeline Integration & Deployment** - File watcher, end-to-end pipeline orchestration, Docker containers, and docker-compose
 - [ ] **Phase 4: API & Browse Frontend** - FastAPI REST API and React frontend for searching and viewing canonical events
 - [ ] **Phase 5: AI-Assisted Matching** - Gemini Flash integration for ambiguous pairs with caching and cost monitoring
@@ -53,10 +53,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Database models (CanonicalEvent, CanonicalEventSource, MatchDecision), matching config (YAML + Pydantic), signal scorers (date, geo, title, description), weighted combiner
-- [ ] 02-02-PLAN.md -- Candidate pair generator using blocking keys, matching pipeline orchestrator that scores all pairs
-- [ ] 02-03-PLAN.md -- Graph-based clustering with networkx connected_components, cluster coherence validation
-- [ ] 02-04-PLAN.md -- Canonical event synthesis with field strategies and provenance, enrichment engine, full pipeline orchestrator, updated evaluation harness
+- [x] 02-01-PLAN.md -- Database models (CanonicalEvent, CanonicalEventSource, MatchDecision), matching config (YAML + Pydantic), signal scorers (date, geo, title, description), weighted combiner
+- [x] 02-02-PLAN.md -- Candidate pair generator using blocking keys, matching pipeline orchestrator that scores all pairs
+- [x] 02-03-PLAN.md -- Graph-based clustering with networkx connected_components, cluster coherence validation
+- [x] 02-04-PLAN.md -- Canonical event synthesis with field strategies and provenance, enrichment engine, full pipeline orchestrator, updated evaluation harness
 
 ### Phase 3: Pipeline Integration & Deployment
 **Goal**: The complete pipeline runs as Docker containers that automatically process new JSON files dropped into a watched directory
@@ -141,7 +141,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Ground Truth | 4/4 | Complete | 2026-02-27 |
-| 2. Core Matching Pipeline | 3/4 | In progress | - |
+| 2. Core Matching Pipeline | 4/4 | Complete | 2026-02-28 |
 | 3. Pipeline Integration & Deployment | 0/2 | Not started | - |
 | 4. API & Browse Frontend | 0/2 | Not started | - |
 | 5. AI-Assisted Matching | 0/2 | Not started | - |

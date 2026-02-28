@@ -5,34 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 2: Core Matching Pipeline -- IN PROGRESS
+**Current focus:** Phase 2: Core Matching Pipeline -- COMPLETE
 
 ## Current Position
 
-Phase: 2 of 7 (Core Matching Pipeline) -- IN PROGRESS
-Plan: 3 of 4 in current phase (02-01, 02-02, 02-03 complete)
-Status: Graph-based clustering with coherence validation complete. Next: 02-04 (canonical event synthesis)
-Last activity: 2026-02-28 -- Completed 02-03 (graph clustering + coherence)
+Phase: 2 of 7 (Core Matching Pipeline) -- COMPLETE
+Plan: 4 of 4 in current phase (02-01, 02-02, 02-03, 02-04 complete)
+Status: Phase 2 complete. Full matching pipeline operational: blocking -> scoring -> clustering -> synthesis. Next: Phase 3 (pipeline integration + deployment)
+Last activity: 2026-02-28 -- Completed 02-04 (canonical synthesis + enrichment + full pipeline)
 
-Progress: [████░░░░░░] 30%
+Progress: [████░░░░░░] 35%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: 4m
-- Total execution time: 0.43 hours
+- Total execution time: 0.53 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 4/4 | 20m | 5m |
-| 2 | 3/4 | 11m | 3.7m |
+| 2 | 4/4 | 17m | 4.3m |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (5m), 02-01 (5m), 02-02 (4m), 02-03 (2m)
-- Trend: accelerating
+- Last 5 plans: 02-01 (5m), 02-02 (4m), 02-03 (2m), 02-04 (6m)
+- Trend: steady (02-04 larger scope: synthesis + enrichment + pipeline + evaluation + e2e tests)
 
 *Updated after each plan completion*
 
@@ -70,6 +70,10 @@ Recent decisions affecting current work:
 - [02-03]: Flagged clusters separated from valid clusters -- both tracked in ClusterResult for review workflows
 - [02-03]: Date spread limit of >3 distinct dates catches unrelated events bridged by false positives
 - [02-03]: Coherence checks short-circuit: size -> similarity -> date spread (cheapest first)
+- [02-04]: Lazy imports in pipeline.py to break circular dependency (pipeline -> clustering -> pipeline)
+- [02-04]: TYPE_CHECKING guard for ClusterResult type annotation in PipelineResult dataclass
+- [02-04]: Provenance uses "union_all_sources" for list/date fields since multiple sources contribute
+- [02-04]: Boolean provenance tracks first source with True value
 
 ### Ground Truth Dataset
 
@@ -92,6 +96,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 02-03-PLAN.md (graph clustering + coherence validation)
-Resume file: .planning/phases/02/02-04-PLAN.md
-Next action: Execute 02-04 (canonical event synthesis + enrichment)
+Stopped at: Completed 02-04-PLAN.md (canonical synthesis + enrichment + full pipeline). Phase 2 COMPLETE.
+Resume file: .planning/phases/03/03-01-PLAN.md
+Next action: Plan and execute Phase 3 (pipeline integration + deployment)
