@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 5: AI-Assisted Matching -- COMPLETE
+**Current focus:** Phase 6: Manual Review & Operations -- IN PROGRESS
 
 ## Current Position
 
-Phase: 5 of 7 (AI-Assisted Matching) -- COMPLETE
-Plan: 2 of 2 in current phase (05-01 complete, 05-02 complete)
-Status: Phase 5 complete. All AI matching infrastructure and pipeline integration done.
-Last activity: 2026-02-28 -- Plan 05-02 executed (2 tasks, 14 tests, 4m)
+Phase: 6 of 7 (Manual Review & Operations) -- IN PROGRESS
+Plan: 1 of 2 in current phase (06-01 complete)
+Status: Plan 06-01 complete. Backend review operations (split/merge/queue/dismiss/audit/dashboard) done with 13 tests.
+Last activity: 2026-02-28 -- Plan 06-01 executed (2 tasks, 13 tests, 6m)
 
-Progress: [████████░░] 71%
+Progress: [████████░░] 79%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 4.0m
-- Total execution time: 0.93 hours
+- Total plans completed: 15
+- Average duration: 4.1m
+- Total execution time: 1.03 hours
 
 **By Phase:**
 
@@ -32,9 +32,10 @@ Progress: [████████░░] 71%
 | 3 | 2/2 | 7m | 3.5m |
 | 4 | 2/2 | 13m | 6.5m |
 | 5 | 2/2 | 7m | 3.5m |
+| 6 | 1/2 | 6m | 6m |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (2m), 04-01 (8m), 04-02 (5m), 05-01 (3m), 05-02 (4m)
+- Last 5 plans: 04-01 (8m), 04-02 (5m), 05-01 (3m), 05-02 (4m), 06-01 (6m)
 - Trend: steady
 
 *Updated after each plan completion*
@@ -100,6 +101,9 @@ Recent decisions affecting current work:
 - [05-02]: rebuild_pipeline_result re-clusters only when ambiguous pairs were actually resolved
 - [05-02]: _maybe_resolve_ai is the single integration point for both process_new_file and process_file_batch
 - [05-02]: AI matching auto-enables when GEMINI_API_KEY env var is set (no config file change needed)
+- [06-01]: Use SQL DELETE (not ORM session.delete) for canonical event deletion to avoid cascade conflicts with SQLAlchemy identity map
+- [06-01]: Separate audit_router at /api prefix for /api/audit-log endpoint (not nested under /api/review)
+- [06-01]: Replaced datetime.utcnow() with datetime.now(dt.UTC) to fix deprecation warnings
 
 ### Ground Truth Dataset
 
@@ -122,6 +126,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 05-02-PLAN.md
+Stopped at: Completed 06-01-PLAN.md
 Resume file: N/A
-Next action: Phase 6 planning (next phase)
+Next action: Execute 06-02-PLAN.md (frontend review UI)

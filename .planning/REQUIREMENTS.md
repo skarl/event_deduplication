@@ -58,11 +58,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Frontend: Manual Review
 
-- [ ] **REV-01**: Manual split -- detach a source event from a canonical event (create new canonical or assign to another)
-- [ ] **REV-02**: Manual merge -- combine two canonical events into one, re-synthesize canonical fields
-- [ ] **REV-03**: Review queue of low-confidence matches sorted by uncertainty (most ambiguous first)
-- [ ] **REV-04**: All manual override decisions are logged with an audit trail
-- [ ] **REV-05**: Batch processing dashboard showing match rates, error rates, and processing trends over time
+- [x] **REV-01**: Manual split -- detach a source event from a canonical event (create new canonical or assign to another)
+- [x] **REV-02**: Manual merge -- combine two canonical events into one, re-synthesize canonical fields
+- [x] **REV-03**: Review queue of low-confidence matches sorted by uncertainty (most ambiguous first)
+- [x] **REV-04**: All manual override decisions are logged with an audit trail
+- [x] **REV-05**: Batch processing dashboard showing match rates, error rates, and processing trends over time
 
 ### Deployment
 
@@ -131,11 +131,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-02 | Phase 4: API & Browse Frontend | Complete (04-02) |
 | UI-03 | Phase 4: API & Browse Frontend | Complete (04-02) |
 | UI-04 | Phase 4: API & Browse Frontend | Complete (04-02) |
-| REV-01 | Phase 6: Manual Review & Operations | Pending |
-| REV-02 | Phase 6: Manual Review & Operations | Pending |
-| REV-03 | Phase 6: Manual Review & Operations | Pending |
-| REV-04 | Phase 6: Manual Review & Operations | Pending |
-| REV-05 | Phase 6: Manual Review & Operations | Pending |
+| REV-01 | Phase 6: Manual Review & Operations | Complete (06-01) |
+| REV-02 | Phase 6: Manual Review & Operations | Complete (06-01) |
+| REV-03 | Phase 6: Manual Review & Operations | Complete (06-01) |
+| REV-04 | Phase 6: Manual Review & Operations | Complete (06-01) |
+| REV-05 | Phase 6: Manual Review & Operations | Complete (06-01) |
 | DEPL-01 | Phase 3: Pipeline Integration & Deployment | Complete (03-02) |
 | DEPL-02 | Phase 3: Pipeline Integration & Deployment | Complete (03-02) |
 | DEPL-03 | Phase 3: Pipeline Integration & Deployment | Complete (03-02) |
