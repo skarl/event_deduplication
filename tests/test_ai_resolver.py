@@ -23,7 +23,7 @@ def _make_signals(score: float = 0.5) -> SignalScores:
 
 
 def _make_decision(
-    id_a: str, id_b: str, decision: str = "ambiguous", score: float = 0.5
+    id_a: str, id_b: str, decision: str = "ambiguous", score: float = 0.7
 ) -> MatchDecisionRecord:
     return MatchDecisionRecord(
         event_id_a=id_a,

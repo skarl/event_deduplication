@@ -48,7 +48,11 @@ async def resolve_ambiguous_pairs(
         ambiguous if AI confidence is below threshold or API failed).
     """
     events_by_id = {e["id"]: e for e in events}
-    ambiguous = [d for d in match_result.decisions if d.decision == "ambiguous"]
+    ambiguous = [
+        d for d in match_result.decisions
+        if d.decision == "ambiguous"
+        and ai_config.min_combined_score <= d.combined_score_value <= ai_config.max_combined_score
+    ]
 
     if not ambiguous:
         logger.info("ai_resolver_skip", reason="no_ambiguous_pairs")

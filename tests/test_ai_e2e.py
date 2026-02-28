@@ -133,7 +133,7 @@ class TestAIMatchingE2E:
             event_id_a="pdf-aaa-0-0",
             event_id_b="pdf-bbb-0-0",
             signals=SignalScores(date=0.95, geo=1.0, title=0.55, description=0.4),
-            combined_score_value=0.55,
+            combined_score_value=0.70,
             decision="ambiguous",
             tier="deterministic",
         )
@@ -328,7 +328,7 @@ class TestAIMatchingE2E:
             # Pair 1: ambiguous -> will be AI-resolved to match
             MatchDecisionRecord(
                 "pdf-aaa-0-0", "pdf-bbb-0-0",
-                SignalScores(0.9, 0.9, 0.55, 0.4), 0.55, "ambiguous", "deterministic",
+                SignalScores(0.9, 0.9, 0.55, 0.4), 0.70, "ambiguous", "deterministic",
             ),
             # Pair 2: deterministic match
             MatchDecisionRecord(

@@ -241,6 +241,8 @@ export interface AIConfigResponse {
   max_output_tokens: number;
   max_concurrent_requests: number;
   confidence_threshold: number;
+  min_combined_score: number;
+  max_combined_score: number;
   cache_enabled: boolean;
   cost_per_1m_input_tokens: number;
   cost_per_1m_output_tokens: number;

@@ -242,6 +242,8 @@ class AIConfigResponse(BaseModel):
     max_output_tokens: int = 2048
     max_concurrent_requests: int = 5
     confidence_threshold: float = 0.6
+    min_combined_score: float = 0.65
+    max_combined_score: float = 0.79
     cache_enabled: bool = True
     cost_per_1m_input_tokens: float = 0.30
     cost_per_1m_output_tokens: float = 2.50

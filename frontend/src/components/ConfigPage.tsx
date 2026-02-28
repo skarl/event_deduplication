@@ -379,6 +379,8 @@ function AIMatchingSection({
         max_output_tokens: ai.max_output_tokens,
         max_concurrent_requests: ai.max_concurrent_requests,
         confidence_threshold: ai.confidence_threshold,
+        min_combined_score: ai.min_combined_score,
+        max_combined_score: ai.max_combined_score,
         cache_enabled: ai.cache_enabled,
         cost_per_1m_input_tokens: ai.cost_per_1m_input_tokens,
         cost_per_1m_output_tokens: ai.cost_per_1m_output_tokens,
@@ -487,6 +489,18 @@ function AIMatchingSection({
           label="Confidence threshold"
           value={ai.confidence_threshold}
           onChange={(v) => setAi((p) => ({ ...p, confidence_threshold: v }))}
+          max="1.0"
+        />
+        <NumberField
+          label="Min combined score (AI)"
+          value={ai.min_combined_score}
+          onChange={(v) => setAi((p) => ({ ...p, min_combined_score: v }))}
+          max="1.0"
+        />
+        <NumberField
+          label="Max combined score (AI)"
+          value={ai.max_combined_score}
+          onChange={(v) => setAi((p) => ({ ...p, max_combined_score: v }))}
           max="1.0"
         />
         <div className="flex items-center gap-2 pt-6">
