@@ -24,7 +24,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **MTCH-07**: German dialect synonym dictionary maps equivalent terms (Fasnet/Fasching/Fastnacht/Karneval etc.)
 - [ ] **MTCH-08**: Category-aware matching weights adjust calibration per event type (carnival events weighted differently than political events)
 - [ ] **MTCH-09**: Source-type-aware comparison adjusts for artikel (journalistic headline) vs terminliste (event name) title formats
-- [ ] **MTCH-10**: Deduplication uses graph-based clustering (connected components), not pairwise decisions
+- [x] **MTCH-10**: Deduplication uses graph-based clustering (connected components), not pairwise decisions
 
 ### AI-Assisted Matching
 
@@ -112,7 +112,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MTCH-07 | Phase 7: Accuracy Refinement | Pending |
 | MTCH-08 | Phase 7: Accuracy Refinement | Pending |
 | MTCH-09 | Phase 7: Accuracy Refinement | Pending |
-| MTCH-10 | Phase 2: Core Matching Pipeline | Pending |
+| MTCH-10 | Phase 2: Core Matching Pipeline | Complete |
 | AI-01 | Phase 5: AI-Assisted Matching | Pending |
 | AI-02 | Phase 5: AI-Assisted Matching | Pending |
 | AI-03 | Phase 5: AI-Assisted Matching | Pending |
@@ -147,4 +147,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after Plan 01-03 completion (Phase 1 complete)*
+*Last updated: 2026-02-28 after Plan 02-03 completion (MTCH-10 complete)*

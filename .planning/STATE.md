@@ -10,29 +10,29 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 Phase: 2 of 7 (Core Matching Pipeline) -- IN PROGRESS
-Plan: 2 of 4 in current phase (02-01 and 02-02 complete)
-Status: Candidate pair generator and scoring pipeline complete. Next: 02-03 (clustering)
-Last activity: 2026-02-28 -- Completed 02-02 (candidate pairs + pipeline orchestrator)
+Plan: 3 of 4 in current phase (02-01, 02-02, 02-03 complete)
+Status: Graph-based clustering with coherence validation complete. Next: 02-04 (canonical event synthesis)
+Last activity: 2026-02-28 -- Completed 02-03 (graph clustering + coherence)
 
-Progress: [███░░░░░░░] 25%
+Progress: [████░░░░░░] 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 5m
-- Total execution time: 0.40 hours
+- Total plans completed: 7
+- Average duration: 4m
+- Total execution time: 0.43 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 4/4 | 20m | 5m |
-| 2 | 2/4 | 9m | 4.5m |
+| 2 | 3/4 | 11m | 3.7m |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (6m), 01-04 (5m), 02-01 (5m), 02-02 (4m)
-- Trend: stable
+- Last 5 plans: 01-04 (5m), 02-01 (5m), 02-02 (4m), 02-03 (2m)
+- Trend: accelerating
 
 *Updated after each plan completion*
 
@@ -66,6 +66,10 @@ Recent decisions affecting current work:
 - [02-02]: Cross-source enforcement at pair generation level, not pipeline level
 - [02-02]: Pipeline is a pure function (no DB access) taking event dicts and MatchingConfig
 - [02-02]: get_match_pairs() provides the interface for Plan 02-03 clustering
+- [02-03]: Singletons (unmatched events) included in clusters list as size-1 sets for downstream uniformity
+- [02-03]: Flagged clusters separated from valid clusters -- both tracked in ClusterResult for review workflows
+- [02-03]: Date spread limit of >3 distinct dates catches unrelated events bridged by false positives
+- [02-03]: Coherence checks short-circuit: size -> similarity -> date spread (cheapest first)
 
 ### Ground Truth Dataset
 
@@ -88,6 +92,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed 02-02-PLAN.md (candidate pairs + pipeline orchestrator)
-Resume file: .planning/phases/02/02-03-PLAN.md
-Next action: Execute 02-03 (graph-based clustering)
+Stopped at: Completed 02-03-PLAN.md (graph clustering + coherence validation)
+Resume file: .planning/phases/02/02-04-PLAN.md
+Next action: Execute 02-04 (canonical event synthesis + enrichment)
