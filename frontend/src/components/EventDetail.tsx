@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { useCanonicalEventDetail } from '../hooks/useCanonicalEvents';
 import { SourceComparison } from './SourceComparison';
 import { ConfidenceIndicator } from './ConfidenceIndicator';
+import { SplitDialog } from './SplitDialog';
+import { MergeDialog } from './MergeDialog';
+import { AuditTrail } from './AuditTrail';
 
 function formatDate(dateStr: string): string {
   try {
@@ -30,6 +34,8 @@ export function EventDetail() {
   const { id } = useParams<{ id: string }>();
   const eventId = Number(id ?? '0');
   const { data: detail, isLoading, isError, error } = useCanonicalEventDetail(eventId);
+  const [splitSource, setSplitSource] = useState<{ id: string; title: string } | null>(null);
+  const [showMerge, setShowMerge] = useState(false);
 
   if (isLoading) {
     return <div className="text-center py-12 text-gray-500">Loading event details...</div>;
@@ -86,6 +92,15 @@ export function EventDetail() {
               Needs Review
             </span>
           )}
+        </div>
+        {/* Review actions */}
+        <div className="mt-3 pt-3 border-t flex gap-2">
+          <button
+            onClick={() => setShowMerge(true)}
+            className="text-sm px-3 py-1.5 bg-orange-50 text-orange-700 border border-orange-200 rounded hover:bg-orange-100"
+          >
+            Merge with...
+          </button>
         </div>
       </div>
 
@@ -234,6 +249,22 @@ export function EventDetail() {
           Source Events ({detail.sources.length})
         </h3>
         <SourceComparison sources={detail.sources} />
+        {detail.sources.length >= 2 && (
+          <div className="mt-4 pt-4 border-t">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Detach source event:</h4>
+            <div className="flex flex-wrap gap-2">
+              {detail.sources.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setSplitSource({ id: s.id, title: s.title })}
+                  className="text-xs px-2 py-1 bg-red-50 text-red-700 border border-red-200 rounded hover:bg-red-100"
+                >
+                  Split: {s.title.length > 40 ? s.title.slice(0, 40) + '...' : s.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Section 4: Match Confidence */}
@@ -244,6 +275,31 @@ export function EventDetail() {
           sourceIds={detail.sources.map((s) => s.id)}
         />
       </div>
+
+      {/* Section 5: Audit Trail */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Audit Trail</h3>
+        <AuditTrail canonicalEventId={eventId} />
+      </div>
+
+      {/* Dialogs */}
+      {splitSource && (
+        <SplitDialog
+          canonicalEventId={eventId}
+          sourceEventId={splitSource.id}
+          sourceTitle={splitSource.title}
+          onClose={() => setSplitSource(null)}
+          onSuccess={() => setSplitSource(null)}
+        />
+      )}
+      {showMerge && (
+        <MergeDialog
+          canonicalEventId={eventId}
+          canonicalTitle={detail.title}
+          onClose={() => setShowMerge(false)}
+          onSuccess={() => setShowMerge(false)}
+        />
+      )}
     </div>
   );
 }
