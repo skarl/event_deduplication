@@ -95,7 +95,7 @@ class AIMatchingConfig(BaseModel):
     api_key: str = ""
     model: str = "gemini-2.5-flash"
     temperature: float = 0.1
-    max_output_tokens: int = 300
+    max_output_tokens: int = 2048
     max_concurrent_requests: int = 5
     confidence_threshold: float = 0.6
     cache_enabled: bool = True
