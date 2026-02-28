@@ -16,7 +16,7 @@
 
 Plans:
 - [x] 08-01-PLAN.md — Backend: DB model, migration, encryption, API endpoints, worker config loading, tests
-- [ ] 08-02-PLAN.md — Frontend: config page with grouped sections, API key management, AI toggle
+- [x] 08-02-PLAN.md — Frontend: config page with grouped sections, API key management, AI toggle
 
 **Scope:**
 - Database-backed config model (replaces YAML-only config)
@@ -29,6 +29,11 @@ Plans:
 **Goal:** AI matching is verified end-to-end and its involvement is visible throughout the system
 **Requirements:** AIM-01, AIM-02, AIM-03, AIM-04
 **Depends on:** Phase 8 (API key + on/off toggle in config)
+**Plans:** 2 plans
+
+Plans:
+- [x] 09-01-PLAN.md — Backend: DB migration, model, pipeline computation, persistence, API schema, integration test
+- [x] 09-02-PLAN.md — Frontend: TypeScript types, AI badge in event list/detail, ConfidenceIndicator tier styling
 
 **Scope:**
 - Integration test: process test events through full pipeline with AI enabled (mock or real Gemini)
