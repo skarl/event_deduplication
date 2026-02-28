@@ -40,7 +40,7 @@ def upgrade() -> None:
         sa.Column("completion_tokens", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("total_tokens", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("estimated_cost_usd", sa.Float(), nullable=False, server_default="0.0"),
-        sa.Column("cached", sa.Boolean(), nullable=False, server_default=sa.text("0")),
+        sa.Column("cached", sa.Boolean(), nullable=False, server_default=sa.text("false")),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("CURRENT_TIMESTAMP")),
     )
     op.create_index("ix_ai_usage_log_batch_id", "ai_usage_log", ["batch_id"])

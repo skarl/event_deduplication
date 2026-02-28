@@ -29,7 +29,7 @@ async def dashboard_stats(
     days: int = Query(default=30, ge=1, le=365),
 ) -> DashboardStats:
     """Aggregate file processing stats, match distribution, and canonical summary."""
-    cutoff = dt.datetime.now(dt.UTC) - dt.timedelta(days=days)
+    cutoff = dt.datetime.now(dt.UTC).replace(tzinfo=None) - dt.timedelta(days=days)
 
     # 1. File processing stats
     file_stmt = sa.select(
@@ -87,7 +87,7 @@ async def processing_history(
     days: int = Query(default=30, ge=1, le=365),
 ) -> list[ProcessingHistoryEntry]:
     """Daily time-series data for processing trends."""
-    cutoff = dt.datetime.now(dt.UTC) - dt.timedelta(days=days)
+    cutoff = dt.datetime.now(dt.UTC).replace(tzinfo=None) - dt.timedelta(days=days)
 
     date_col = sa.func.date(FileIngestion.ingested_at).label("date")
     stmt = (
