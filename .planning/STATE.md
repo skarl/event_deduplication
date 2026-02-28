@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Milestone: v0.2
-Status: In progress — Phase 9 complete
-Last activity: 2026-02-28 — Phase 9 executed (2 plans, 2 commits)
+Status: In progress — Phase 11 complete
+Last activity: 2026-02-28 — Phase 11 executed (2 plans, 2 commits)
 
-Progress: [████░░░░░░] 40%
+Progress: [████████░░] 80%
 
 ## Phase Overview
 
@@ -21,8 +21,8 @@ Progress: [████░░░░░░] 40%
 |-------|-------|-------------|--------|
 | 8 | Dynamic Configuration System | CFG-01..05 | Complete |
 | 9 | AI Matching Verification & Indicators | AIM-01..04 | Complete |
-| 10 | Time Gap Penalty | TGP-01..02 | Pending |
-| 11 | Frontend UX Improvements | UIX-01..04 | Pending |
+| 10 | Time Gap Penalty & Venue Matching | TGP-01..02 | Complete |
+| 11 | Frontend UX Improvements | UIX-01..04 | Complete |
 | 12 | Export Function | EXP-01..04 | Pending |
 
 ## Performance Metrics
@@ -40,6 +40,10 @@ Progress: [████░░░░░░] 40%
 | 08 | 02 | 2m 56s | 2 | 5 |
 | 09 | 01 | ~4m | 2 | 6 |
 | 09 | 02 | ~2m | 4 | 4 |
+| 10 | 01 | ~3m | 2 | 6 |
+| 10 | 02 | ~1m | 3 | 2 |
+| 11 | 01 | ~2m | 2 | 2 |
+| 11 | 02 | ~3m | 2 | 8 |
 
 ## Accumulated Context
 
@@ -51,7 +55,7 @@ Regenerate: `uv run python scripts/generate_ground_truth.py`
 
 ### Pending Todos
 
-None.
+- **[HIGH]** Investigate why near-identical events show only 80% match in review — likely source city mismatch ("elt" vs "elz") penalizing score despite identical venue/date/title (`.planning/todos/investigate-80pct-match-review.md`)
 
 ### Blockers/Concerns
 
@@ -69,10 +73,17 @@ None.
 - ai_assisted computed in pipeline (not synthesizer or API route) to avoid N+1 queries
 - tier.startswith("ai") to catch all AI tier variants
 - TierBadge component with purple/orange/gray color coding
+- 4-tier time proximity model: exact/close/far/gap penalty (was 3-tier)
+- Venue name matching only within close proximity (<1km) to avoid penalizing distant events
+- RapidFuzz token_sort_ratio >= 0.5 threshold for venue similarity
+- Multi-value city filter with OR semantics, multi-value category filter with AND semantics
+- ChipSelector as controlled component, no component library needed
+- size=0 in UI maps to size=10000 for API (ALL sentinel)
+- nullslast for desc sort, nullsfirst for asc sort on nullable columns
 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Phase 9 complete
+Stopped at: Phase 11 complete
 Resume file: N/A
-Next action: `/gsd:plan-phase 10` to plan Time Gap Penalty
+Next action: `/gsd:plan-phase 12` to plan Export Function
