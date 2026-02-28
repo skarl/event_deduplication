@@ -95,3 +95,80 @@ export interface EventFilters {
   date_to?: string;
   category?: string;
 }
+
+// --- Review operation types ---
+
+export interface SplitRequest {
+  canonical_event_id: number;
+  source_event_id: string;
+  target_canonical_id?: number | null;
+  operator?: string;
+}
+
+export interface SplitResponse {
+  original_canonical_id: number;
+  new_canonical_id: number | null;
+  target_canonical_id: number | null;
+  original_deleted: boolean;
+}
+
+export interface MergeRequest {
+  source_canonical_id: number;
+  target_canonical_id: number;
+  operator?: string;
+}
+
+export interface MergeResponse {
+  surviving_canonical_id: number;
+  deleted_canonical_id: number;
+  new_source_count: number;
+}
+
+export interface DismissRequest {
+  operator?: string;
+  reason?: string;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  action_type: string;
+  canonical_event_id: number | null;
+  source_event_id: string | null;
+  operator: string;
+  details: Record<string, unknown> | null;
+  created_at: string;
+}
+
+// --- Dashboard types ---
+
+export interface FileProcessingStats {
+  total_files: number;
+  total_events: number;
+  completed: number;
+  errors: number;
+}
+
+export interface MatchDistribution {
+  match: number;
+  no_match: number;
+  ambiguous: number;
+}
+
+export interface CanonicalStats {
+  total: number;
+  needs_review: number;
+  avg_confidence: number | null;
+}
+
+export interface DashboardStats {
+  files: FileProcessingStats;
+  matches: MatchDistribution;
+  canonicals: CanonicalStats;
+}
+
+export interface ProcessingHistoryEntry {
+  date: string;
+  files_processed: number;
+  events_ingested: number;
+  errors: number;
+}
