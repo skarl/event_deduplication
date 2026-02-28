@@ -15,6 +15,8 @@ dependencies = [
     "networkx>=3.6.1",
     "watchfiles>=1.0",
     "structlog>=24.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
 ]
 
 [project.optional-dependencies]
@@ -23,6 +25,7 @@ dev = [
     "pytest-asyncio>=0.24",
     "ruff>=0.9",
     "aiosqlite>=0.20",
+    "httpx>=0.28",
 ]
 
 [build-system]
@@ -46,4 +49,5 @@ dev = [
     "pytest-asyncio>=0.24",
     "ruff>=0.9",
     "aiosqlite>=0.20",
+    "httpx>=0.28",
 ]
