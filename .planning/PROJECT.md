@@ -6,62 +6,63 @@ A Dockerized service that watches for incoming JSON files of events (extracted f
 
 ## Core Value
 
-Accurate event deduplication — the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
+Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
+
+## Current State (v0.1 shipped)
+
+All v0.1 requirements delivered. The system is fully operational:
+
+- **Pipeline**: File watcher ingests JSON, preprocesses (normalization, synonyms, blocking keys), matches via 4-signal scoring + graph clustering, synthesizes canonical events, persists to PostgreSQL
+- **AI Matching**: Gemini Flash resolves ambiguous pairs with caching and cost tracking
+- **Frontend**: React UI for browsing, searching, source comparison, split/merge review, audit trail, processing dashboard
+- **Deployment**: Docker containers (worker, API, frontend, PostgreSQL) via docker-compose
+- **Accuracy**: German dialect synonyms, category-aware weights, source-type-aware title comparison
+- **Tests**: 371 tests passing, 39/39 requirements complete
 
 ## Requirements
 
-### Validated
+### Validated (v0.1)
 
-(None yet — ship to validate)
+- [x] Multi-signal deduplication (date + location + title similarity + geo proximity)
+- [x] Tiered matching: fast deterministic matching first, AI-assisted matching for ambiguous cases
+- [x] Canonical event creation from grouped sources (best title, longest description, richest highlights, most precise location)
+- [x] All original source events preserved and linked to their canonical event
+- [x] Enrichment: when new sources arrive for an existing canonical event, update it with any better information
+- [x] Direct PostgreSQL integration (read existing events, write canonical events + source links)
+- [x] Docker container that watches a directory for new JSON files
+- [x] Frontend: searchable event list showing canonical events with all fields
+- [x] Frontend: drill-down from canonical event to its source events
+- [x] Frontend: manual review UI to correct grouping decisions (split wrong groups, merge missed ones)
 
-### Active
+### Future (v2 candidates)
 
-- [ ] Multi-signal deduplication (date + location + title similarity + geo proximity)
-- [ ] Tiered matching: fast deterministic matching first, AI-assisted matching for ambiguous cases
-- [ ] Canonical event creation from grouped sources (best title, longest description, richest highlights, most precise location)
-- [ ] All original source events preserved and linked to their canonical event
-- [ ] Enrichment: when new sources arrive for an existing canonical event, update it with any better information
-- [ ] Direct PostgreSQL integration (read existing events, write canonical events + source links)
-- [ ] Docker container that watches a directory for new JSON files
-- [ ] Frontend: searchable event list showing canonical events with all fields
-- [ ] Frontend: drill-down from canonical event to its source events
-- [ ] Frontend: manual review UI to correct grouping decisions (split wrong groups, merge missed ones)
+- Feedback loop: manual review decisions inform threshold tuning recommendations
+- Duplicate cluster visualization (network graph)
+- Incremental blocking key indexing for datasets >10K events/week
 
 ### Out of Scope
 
-- Modifying the upstream PDF extraction pipeline — we receive JSON as-is
-- Real-time event streaming — batch processing via file watch is sufficient
-- User authentication for the frontend — internal tool, no auth needed
-- Mobile-optimized frontend — desktop-first internal tool
+- Modifying the upstream PDF extraction pipeline -- we receive JSON as-is
+- Real-time event streaming -- batch processing via file watch is sufficient
+- User authentication for the frontend -- internal tool, no auth needed
+- Mobile-optimized frontend -- desktop-first internal tool
 
 ## Context
 
 **Data characteristics (from 20 sample files, 765 events):**
 - Events come from ~10 regional PDF magazine sources (bwb, emt, rks, rkt, del, den, elt, elz, ets, rkb, rkm)
-- Sources have overlapping geographic coverage — the same event (e.g. "Primel-Aktion Emmendingen") appeared across 6 different source files
+- Sources have overlapping geographic coverage -- the same event (e.g. "Primel-Aktion Emmendingen") appeared across 6 different source files
 - Title variations range from identical (100% match) to substantially different wording (60-75% match) for the same event
-- Location names vary between sources ("Marktplatz" vs "Marktplatz Waldkirch" vs "Marktplatz und Kirchstra\u00dfe")
+- Location names vary between sources ("Marktplatz" vs "Marktplatz Waldkirch" vs "Marktplatz und Kirchstrasse")
 - Times can differ slightly between sources (19:11 vs 19:30 for same event)
 - Events have geo coordinates with confidence scores, categories, family/child flags, registration info
 - Some false positive risk: different events at same venue and time (e.g. "Kinderball Waldkirch" vs "Kinderball Krakeelia")
 - Volume: 2000+ events per week across all sources
 
-**Current approach:**
-- Export DB before each file import, match on location + time + title similarity
-- ~65% accuracy — too many missed duplicates and some false merges
-
-**Event data fields:**
-- title, short_description, description, highlights
-- event_dates (date, start_time, end_time)
-- location (name, city, district, street, street_no, zipcode, geo coordinates with confidence)
-- source_type, categories, is_family_event, is_child_focused
-- admission_free, registration_required, registration_contact
-- confidence_score, batch metadata, unique id
-
 ## Constraints
 
-- **Cost**: AI-assisted matching should be used sparingly — only for ambiguous cases that fast matching can't resolve. Budget should stay minimal per 1000 events.
-- **Deployment**: Must run as Docker container(s)
+- **Cost**: AI-assisted matching used sparingly -- only for ambiguous cases. Budget stays minimal per 1000 events.
+- **Deployment**: Docker containers
 - **Database**: PostgreSQL (existing, tool connects directly)
 - **Input format**: JSON files matching the existing extraction pipeline output format
 - **Performance**: Must handle 2000+ events/week without excessive processing time
@@ -70,11 +71,13 @@ Accurate event deduplication — the same real-world event appearing across mult
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Tiered matching (fast + AI) | Minimize AI costs while maximizing accuracy | — Pending |
-| Group, don't destroy | All source events preserved, canonical event synthesized from best fields | — Pending |
-| Docker + directory watch | Fits existing pipeline, decoupled architecture | — Pending |
-| Direct PG connection | Simpler than export/import cycles, enables enrichment | — Pending |
-| Frontend included | Need visibility into events and manual review capability | — Pending |
+| Tiered matching (fast + AI) | Minimize AI costs while maximizing accuracy | Validated -- Gemini Flash resolves ambiguous pairs |
+| Group, don't destroy | All source events preserved, canonical event synthesized from best fields | Validated -- field provenance tracks contributions |
+| Docker + directory watch | Fits existing pipeline, decoupled architecture | Validated -- watchfiles + docker-compose |
+| Direct PG connection | Simpler than export/import cycles, enables enrichment | Validated -- asyncpg for async operations |
+| Frontend included | Need visibility into events and manual review capability | Validated -- React + TanStack Query |
+| Auto-generated ground truth | Manual labeling too slow for automation-focused project | Validated -- 1181 pairs via conservative heuristics |
+| Synonym normalization at ingestion time | O(events) vs O(pairs), stored in title_normalized | Validated -- +0.04 to +0.22 score improvement |
 
 ---
-*Last updated: 2026-02-27 after initialization*
+*Last updated: 2026-02-28 after v0.1 milestone completion*
