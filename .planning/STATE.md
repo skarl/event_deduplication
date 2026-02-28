@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Accurate event deduplication -- the same real-world event appearing across multiple source PDFs must be reliably grouped, with the best information from all sources combined into a single canonical event.
-**Current focus:** Phase 1: Foundation & Ground Truth -- COMPLETE, ready for Phase 2
+**Current focus:** Phase 2: Core Matching Pipeline -- IN PROGRESS
 
 ## Current Position
 
-Phase: 1 of 7 (Foundation & Ground Truth) -- COMPLETE
-Plan: 4 of 4 in current phase (all complete)
-Status: Phase 1 fully complete including ground truth dataset -- ready for Phase 2
-Last activity: 2026-02-27 -- Completed Plan 01-04 (auto-generated ground truth dataset)
+Phase: 2 of 7 (Core Matching Pipeline) -- IN PROGRESS
+Plan: 2 of 4 in current phase (02-01 and 02-02 complete)
+Status: Candidate pair generator and scoring pipeline complete. Next: 02-03 (clustering)
+Last activity: 2026-02-28 -- Completed 02-02 (candidate pairs + pipeline orchestrator)
 
-Progress: [██░░░░░░░░] 15%
+Progress: [███░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
+- Total plans completed: 6
 - Average duration: 5m
-- Total execution time: 0.33 hours
+- Total execution time: 0.40 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 4/4 | 20m | 5m |
+| 2 | 2/4 | 9m | 4.5m |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5m), 01-02 (4m), 01-03 (6m), 01-04 (5m)
+- Last 5 plans: 01-03 (6m), 01-04 (5m), 02-01 (5m), 02-02 (4m)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -59,6 +60,12 @@ Recent decisions affecting current work:
 - [01-04]: Auto-generate ground truth instead of manual labeling (project goal is automation)
 - [01-04]: Conservative multi-signal heuristics: title_sim>=0.90+same_city for "same", title_sim<0.40 for "different"
 - [01-04]: Ambiguous pairs (0.40-0.90 with mixed signals) excluded from ground truth for reliability
+- [02-01]: Scorers are pure functions taking dict args for testability and decoupling from ORM
+- [02-01]: MatchDecision uses canonical ordering constraint (id_a < id_b) matching GroundTruthPair pattern
+- [02-02]: Candidate pairs deduplicated via set across blocking groups
+- [02-02]: Cross-source enforcement at pair generation level, not pipeline level
+- [02-02]: Pipeline is a pure function (no DB access) taking event dicts and MatchingConfig
+- [02-02]: get_match_pairs() provides the interface for Plan 02-03 clustering
 
 ### Ground Truth Dataset
 
@@ -80,7 +87,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-27
-Stopped at: Completed 01-04-PLAN.md (Phase 1 fully complete)
-Resume file: .planning/phases/01/01-04-SUMMARY.md
-Next action: /gsd:plan-phase 2 (Phase 2: Core Matching Pipeline)
+Last session: 2026-02-28
+Stopped at: Completed 02-02-PLAN.md (candidate pairs + pipeline orchestrator)
+Resume file: .planning/phases/02/02-03-PLAN.md
+Next action: Execute 02-03 (graph-based clustering)

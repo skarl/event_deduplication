@@ -141,7 +141,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Ground Truth | 4/4 | Complete | 2026-02-27 |
-| 2. Core Matching Pipeline | 0/4 | Not started | - |
+| 2. Core Matching Pipeline | 2/4 | In progress | - |
 | 3. Pipeline Integration & Deployment | 0/2 | Not started | - |
 | 4. API & Browse Frontend | 0/2 | Not started | - |
 | 5. AI-Assisted Matching | 0/2 | Not started | - |
