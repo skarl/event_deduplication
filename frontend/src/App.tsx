@@ -4,6 +4,7 @@ import { EventList } from './components/EventList';
 import { EventDetail } from './components/EventDetail';
 import { ReviewQueue } from './components/ReviewQueue';
 import { Dashboard } from './components/Dashboard';
+import { ConfigPage } from './components/ConfigPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,6 +35,9 @@ export default function App() {
                 <Link to="/dashboard" className="text-sm text-gray-600 hover:text-blue-600">
                   Dashboard
                 </Link>
+                <Link to="/config" className="text-sm text-gray-600 hover:text-blue-600">
+                  Config
+                </Link>
               </nav>
             </div>
           </header>
@@ -43,6 +47,7 @@ export default function App() {
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/review" element={<ReviewQueue />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/config" element={<ConfigPage />} />
             </Routes>
           </main>
         </div>
