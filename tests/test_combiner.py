@@ -83,7 +83,7 @@ class TestDecide:
 
     def test_title_veto_at_boundary(self) -> None:
         """Title score exactly at veto threshold is NOT vetoed (< not <=)."""
-        assert decide(0.80, title_score=0.30) == "match"
+        assert decide(0.80, title_score=0.45) == "match"
 
     def test_title_veto_no_effect_on_no_match(self) -> None:
         """Title veto doesn't affect no_match decisions."""
