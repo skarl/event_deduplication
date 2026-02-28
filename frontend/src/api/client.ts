@@ -10,16 +10,18 @@ const API_BASE = '/api';
 export async function fetchCanonicalEvents(
   filters: EventFilters,
   page: number = 1,
-  size: number = 20,
+  size: number = 25,
 ): Promise<PaginatedResponse<CanonicalEventSummary>> {
   const params = new URLSearchParams();
   params.set('page', String(page));
   params.set('size', String(size));
   if (filters.q) params.set('q', filters.q);
-  if (filters.city) params.set('city', filters.city);
+  filters.cities?.forEach(c => params.append('city', c));
+  filters.categories?.forEach(c => params.append('category', c));
   if (filters.date_from) params.set('date_from', filters.date_from);
   if (filters.date_to) params.set('date_to', filters.date_to);
-  if (filters.category) params.set('category', filters.category);
+  if (filters.sort_by) params.set('sort_by', filters.sort_by);
+  if (filters.sort_dir) params.set('sort_dir', filters.sort_dir);
 
   const res = await fetch(`${API_BASE}/canonical-events?${params}`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -28,6 +30,18 @@ export async function fetchCanonicalEvents(
 
 export async function fetchCanonicalEventDetail(id: number): Promise<CanonicalEventDetail> {
   const res = await fetch(`${API_BASE}/canonical-events/${id}`);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchDistinctCategories(): Promise<string[]> {
+  const res = await fetch(`${API_BASE}/canonical-events/categories`);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchDistinctCities(): Promise<string[]> {
+  const res = await fetch(`${API_BASE}/canonical-events/cities`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 }

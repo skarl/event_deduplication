@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import type { EventFilters } from '../types';
+import { ChipSelector } from './ChipSelector';
+import { useDistinctCategories, useDistinctCities } from '../hooks/useCanonicalEvents';
 
 interface SearchFiltersProps {
   filters: EventFilters;
@@ -7,17 +9,29 @@ interface SearchFiltersProps {
 }
 
 export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) {
-  const [localFilters, setLocalFilters] = useState<EventFilters>(filters);
+  // Local state only for text fields that require form submit
+  const [localQ, setLocalQ] = useState(filters.q ?? '');
+  const [localDateFrom, setLocalDateFrom] = useState(filters.date_from ?? '');
+  const [localDateTo, setLocalDateTo] = useState(filters.date_to ?? '');
+
+  const { data: categoryOptions = [] } = useDistinctCategories();
+  const { data: cityOptions = [] } = useDistinctCities();
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onFiltersChange(localFilters);
+    onFiltersChange({
+      ...filters,
+      q: localQ || undefined,
+      date_from: localDateFrom || undefined,
+      date_to: localDateTo || undefined,
+    });
   }
 
   function handleClear() {
-    const cleared: EventFilters = {};
-    setLocalFilters(cleared);
-    onFiltersChange(cleared);
+    setLocalQ('');
+    setLocalDateFrom('');
+    setLocalDateTo('');
+    onFiltersChange({});
   }
 
   return (
@@ -28,27 +42,24 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
           <input
             type="text"
             placeholder="Search events..."
-            value={localFilters.q ?? ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, q: e.target.value })}
+            value={localQ}
+            onChange={e => setLocalQ(e.target.value)}
             className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div className="min-w-[120px]">
-          <label className="block text-xs font-medium text-gray-600 mb-1">City</label>
-          <input
-            type="text"
-            placeholder="City..."
-            value={localFilters.city ?? ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, city: e.target.value })}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+        <ChipSelector
+          label="City"
+          options={cityOptions}
+          selected={filters.cities ?? []}
+          onChange={cities => onFiltersChange({ ...filters, cities })}
+          placeholder="Add city..."
+        />
         <div className="min-w-[140px]">
           <label className="block text-xs font-medium text-gray-600 mb-1">Date from</label>
           <input
             type="date"
-            value={localFilters.date_from ?? ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, date_from: e.target.value })}
+            value={localDateFrom}
+            onChange={e => setLocalDateFrom(e.target.value)}
             className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
@@ -56,21 +67,18 @@ export function SearchFilters({ filters, onFiltersChange }: SearchFiltersProps) 
           <label className="block text-xs font-medium text-gray-600 mb-1">Date to</label>
           <input
             type="date"
-            value={localFilters.date_to ?? ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, date_to: e.target.value })}
+            value={localDateTo}
+            onChange={e => setLocalDateTo(e.target.value)}
             className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div className="min-w-[120px]">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
-          <input
-            type="text"
-            placeholder="Category..."
-            value={localFilters.category ?? ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, category: e.target.value })}
-            className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
+        <ChipSelector
+          label="Category"
+          options={categoryOptions}
+          selected={filters.categories ?? []}
+          onChange={categories => onFiltersChange({ ...filters, categories })}
+          placeholder="Add category..."
+        />
         <div className="flex gap-2">
           <button
             type="submit"

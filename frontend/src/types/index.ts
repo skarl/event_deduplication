@@ -90,12 +90,17 @@ export interface PaginatedResponse<T> {
   pages: number;
 }
 
+export type SortColumn = 'title' | 'city' | 'date' | 'categories' | 'source_count' | 'confidence' | 'review';
+export type SortDir = 'asc' | 'desc';
+
 export interface EventFilters {
   q?: string;
-  city?: string;
+  cities?: string[];     // was: city?: string  — now multi-value
+  categories?: string[]; // was: category?: string — now multi-value
   date_from?: string;
   date_to?: string;
-  category?: string;
+  sort_by?: SortColumn;
+  sort_dir?: SortDir;
 }
 
 // --- Review operation types ---

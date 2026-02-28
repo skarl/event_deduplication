@@ -132,7 +132,9 @@ export function ReviewQueue() {
             page={data.page}
             pages={data.pages}
             total={data.total}
+            size={20}
             onPageChange={handlePageChange}
+            onSizeChange={() => {}}
           />
         </>
       )}
